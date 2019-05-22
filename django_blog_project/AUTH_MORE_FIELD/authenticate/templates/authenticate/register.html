@@ -1,0 +1,22 @@
+{% extends 'authenticate/base.html' %}
+
+{% block content%}
+
+	<h1 style="font-weight: bold" class="text-center"> Registration Page </h1>
+</br></br></br>
+	<!-- put some logic  so it wont show in main screen 
+	unless you log out -->
+	<!--create a form just for POST action -->
+	<form class="text-center" action="{% url 'register' %}" method="POST"> 
+		{% csrf_token %}
+			{% if form.errors %}	 <!--if the form not fully finished -->
+				<div class="alert alert-warning" role="alert">
+                   <h4>Some Problem Occur</h4>
+                  </div>
+					{%endif%}
+				
+						{{form.as_p}}
+
+	<input type="submit" name="register" value="Register" class="btn btn-success">
+	</form>
+{% endblock %}

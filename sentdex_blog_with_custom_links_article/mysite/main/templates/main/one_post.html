@@ -1,0 +1,15 @@
+{% extends 'main/base.html' %} {% block content %}
+<div class="card">
+  <div class="card-body">
+    <div class="jumbotron">
+      <h2 class="card-title">{{ tutorials.title }}</h2>
+      <p>
+        <i>{{ tutorials.published }}</i>
+      </p>
+    </div>
+    <p class="card-text">{{ tutorials.content | safe }}</p>
+    <!--a href="#" class="btn btn-primary">Go somewhere</a -->
+  </div>
+</div>
+
+{% endblock%}

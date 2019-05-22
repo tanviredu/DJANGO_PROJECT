@@ -1,0 +1,28 @@
+{% extends 'authenticate/base.html' %}
+
+{% block content%}
+
+	<h1 style="font-weight: bold"> New Post</h1>
+</br></br></br>
+	<!-- put some logic  so it wont show in main screen 
+	unless you log out -->
+{% if user.is_authenticated %}
+
+	
+	<!-- put some logic  so it wont show in main screen 
+	unless you log out -->
+	<!--create a form just for POST action -->
+	<form class="text-center" action="{% url 'new_post' %}" method="POST"> 
+		{% csrf_token %}
+				 <!--if the form not fully finished -->
+			
+					
+				
+						{{form.as_p}}
+
+	<input type="submit" name="Save" value="Save" class="btn btn-success">
+	</form>
+	
+
+{%endif%}
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'main/base.html' %} {% block content %}
+<div class="card">
+  <div class="jumbotron">
+    <ul>
+      <h4>POST LIST</h4>
+
+      {% for tut in tutorials %}
+
+      <li>
+        <a href="postdetail/{{ tut.pk }}">{{ tut.title }}</a>
+      </li>
+
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+{% endblock%}

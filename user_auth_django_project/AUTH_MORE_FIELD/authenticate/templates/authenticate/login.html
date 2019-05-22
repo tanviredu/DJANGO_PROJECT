@@ -1,0 +1,80 @@
+{% extends 'authenticate/base.html' %}
+
+{% block content%}
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+
+<script type="text/javascript">
+	
+
+	jQuery(document).ready(function(){
+
+
+	// Show password Button
+	$("#showpassword").on('click', function(){
+		
+		var pass = $("#password");
+		var fieldtype = pass.attr('type');
+		if (fieldtype == 'password') {
+			pass.attr('type', 'text');
+			$(this).text("Hide Password");
+		}else{
+			pass.attr('type', 'password');
+			$(this).text("Show Password");
+		}
+
+
+	});
+
+
+
+
+
+});
+
+
+</script>
+
+<div class="container">	
+	
+	<h2 class="text-center"><strong>&nbsp;&nbsp;&nbsp;Login</strong> <br/></h2><br/>
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<!-- Start form -->
+                    <form method="POST">
+                    	{% csrf_token %}
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Username</label>
+                        <input type="text" name="username" class="form-control"  aria-describedby="emailHelp" placeholder="Enter username">
+                      </div>
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Password</label>
+                        <input type="password" name="password" class="form-control" name="password" id="password" placeholder="Enter Password">
+                      </div>
+                      <div class="text-center">
+                      <div class="form-check">
+                        <button class="btn btn-info" type="button" name="showpassword" id="showpassword" value="Show Password">Show password</button> 
+                        <button type="submit" name="submit" value="submit" class="btn btn-success">Login</button>
+
+                        </div>
+                      </div>
+                      
+                    </form>
+
+
+			<!-- End form -->
+		</div>
+		
+	
+		
+	</div>
+
+
+
+
+
+
+{% endblock %}

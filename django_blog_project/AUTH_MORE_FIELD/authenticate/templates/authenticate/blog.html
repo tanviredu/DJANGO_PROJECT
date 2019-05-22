@@ -1,0 +1,27 @@
+{% extends 'authenticate/base.html' %}
+
+{% block content%}
+
+	<h1 class="text-center" style="font-weight: bold">Blog </h1>
+</br></br></br>
+	<!-- put some logic  so it wont show in main screen 
+	unless you log out -->
+{% if user.is_authenticated %}
+
+        {% for post in all_posts%}
+          
+        <div class="blog-post">
+            <h2 class="blog-post-title">{{post.title}}</h2>
+            <p class="blog-post-meta">{{post.published_date}} by {{post.author}}</p>
+            <hr>
+            <p>{{post.text}}</p>
+
+        </div>
+
+
+
+
+        {% endfor %}
+
+{%endif%}
+{% endblock %}

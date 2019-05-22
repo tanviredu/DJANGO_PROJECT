@@ -1,0 +1,1729 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Django Authentication With Facebook, Instagram and LinkedIn &#8213; Scotch.io</title>
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#2e2e2e">
+<meta name="msapplication-TileColor" content="#2e2e2e">
+<meta name="theme-color" content="#333">
+<link rel="alternate" hreflang="en" type="application/rss+xml" href="https://scotch.io/feed" title="Scotch.io RSS Feed">
+
+<meta name="author" content="Jordan Irabor">
+<link rel="canonical" href="https://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin">
+<link rel="amphtml" href="https://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin/amp">
+
+<meta name="twitter:url" content="http://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin">
+<meta name="twitter:title" content="Django Authentication With Facebook, Instagram and LinkedIn">
+<meta name="twitter:description" content="In this tutorial, we will build a simple Django application that allows users to sign in via their Facebook, Instagram and LinkedIn accounts. To achieve this, we will use the social-auth-app-django library.">
+<meta name="twitter:image" content="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546743603/nib0upqbxynqdgycan7p.png">
+<meta name="twitter:creator" content="JordanIrabor">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@scotch_io">
+
+<meta property="og:title" content="Django Authentication With Facebook, Instagram and LinkedIn">
+<meta property="og:image" content="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546743603/nib0upqbxynqdgycan7p.png">
+<meta property="og:description" content="In this tutorial, we will build a simple Django application that allows users to sign in via their Facebook, Instagram and LinkedIn accounts. To achieve this, we will use the social-auth-app-django library.">
+<meta property="article:author" content="jordan.irabor">
+<meta property="fb:admins" content="579622216,709634581">
+<meta property="fb:app_id" content="1389892087910588">
+<meta property="og:url" content="http://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin">
+<meta property="og:type" content="article">
+<meta property="article:publisher" content="https://www.facebook.com/scotchdevelopment">
+<meta property="og:site_name" content="Scotch">
+
+<link rel="publisher" href="https://plus.google.com/b/113854128330570384219">
+<link rel="author" href="https://plus.google.com/b/113854128330570384219">
+<meta name="description" content="In this tutorial, we will build a simple Django application that allows users to sign in via their Facebook, Instagram and LinkedIn accounts. To achieve this, we will use the social-auth-app-django library.">
+<meta name="google-site-verification" content="NoKkRtzSguNO3Xd1cuhpVkUoh7n8mz-aofV9Ch4aS8w">
+<meta name="article_category" data-category="django">
+<meta name="article_tags" content="django">
+<meta name="article_tags" content="python">
+<meta name="article_tags" content="social media">
+<link rel="dns-prefetch" href="https://scotch.io">
+<link rel="dns-prefetch" href="https://4krgxptf7k-dsn.algolia.net">
+<link rel="dns-prefetch" href="https://scotch-res.cloudinary.com">
+<link rel="dns-prefetch" href="https://www.gravatar.com">
+<link rel="dns-prefetch" href="https://www.google-analytics.com">
+<link rel="dns-prefetch" href="https://sessions.bugsnag.com">
+<link rel="preconnect" href="https://scotch.io">
+<link rel="preconnect" href="https://4krgxptf7k-dsn.algolia.net">
+<link rel="preconnect" href="https://scotch-res.cloudinary.com">
+<link rel="preconnect" href="https://www.gravatar.com">
+<link rel="preconnect" href="https://www.google-analytics.com">
+<link rel="preconnect" href="https://sessions.bugsnag.com">
+<link rel="dns-prefetch" href="https://open-api.spot.im">
+<link rel="preconnect" href="https://open-api.spot.im">
+<link rel="stylesheet" href="https://cloud.typography.com/7250836/7079592/css/fonts.css" />
+<link rel="stylesheet" href="/css/main.css?id=d1e09fc06eba39aeba5d">
+<style>
+    #twitch-banner {
+        transition: 0.3s ease background;
+    }
+    #twitch-banner:hover {
+        background: hsl(254, 36%, 45%) !important;
+    }
+</style>
+<script>
+        window.scotchy = window.scotchy || {};
+        window.scotchy.env = 'production';
+    </script>
+<script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(function(registration) {
+                registration.unregister();
+            });
+        }
+    </script>
+</head>
+<body class="is-single is-post  ">
+<nav id="scotchy-nav" class="navbar is-dark">
+<div class="navbar-brand">
+<a class="navbar-item" href="/">
+<div class="scotch-container">
+<div class="scotch-logo">
+<img class="scotch-logo__image" src="/img/blank-glass.png" alt="Scotch Logo" width="30" height="49">
+<svg class="scotch-logo__liquid" viewBox="0 0 30 48" style="max-width: 80px">
+<defs>
+<clipPath id="clip-path--glass">
+<path class="liquid__path-container" d="M 8.6 1.5 c 0 13.33 -4.17 20 -3.75 23.33 a 9.17 8.33 0 0 0 20.83 0 c 0.42 -3.33 -3.75 -10 -3.75 -23.33 Z"></path>
+</clipPath>
+<clipPath id="clip-path--liquid">
+<path class="liquid__path liquid__path--top-clip" d="M -80 22 C -75.08 16 -69.08 16 -64.17 22 S -53.25 28 -48.33 22 S -37.42 16 -32.5 22 S -21.58 28 -16.67 22 S -5.75 16 -0.83 22 S 10.08 28 15 22 S 25.92 16 30.83 22 S 41.75 28 46.67 22 S 57.58 16 62.5 22 S 73.42 28 78.33 22 S 89.25 16 94.17 22 S 105.08 28 110 22 l 0 30 l -190 0"></path>
+</clipPath>
+</defs>
+<g clip-path="url(#clip-path--glass)">
+<circle class="liquid__drop liquid__drop--top liquid__drop--1" cx="18.3" cy="3.3" r="1.5"></circle>
+<circle class="liquid__drop liquid__drop--bottom liquid__drop--2" cx="12" cy="5" r="1.5"></circle>
+<path class="liquid__path liquid__path--top" d="M -80 22 C -75.08 16 -69.08 16 -64.17 22 S -53.25 28 -48.33 22 S -37.42 16 -32.5 22 S -21.58 28 -16.67 22 S -5.75 16 -0.83 22 S 10.08 28 15 22 S 25.92 16 30.83 22 S 41.75 28 46.67 22 S 57.58 16 62.5 22 S 73.42 28 78.33 22 S 89.25 16 94.17 22 S 105.08 28 110 22 l 0 30 l -190 0"></path>
+<path class="liquid__path liquid__path--bottom" d="M -70 24.5 C -65.92 18.5 -59.92 18.5 -55.83 24.5 S -45.75 30.5 -41.67 24.5 S -31.58 18.5 -27.5 24.5 S -17.42 30.5 -13.33 24.5 S -3.25 18.5 0.83 24.5 S 10.92 30.5 15 24.5 S 25.08 18.5 29.17 24.5 S 39.25 30.5 43.33 24.5 S 53.42 18.5 57.5 24.5 S 67.58 30.5 71.67 24.5 S 81.75 18.5 85.83 24.5 S 95.92 30.5 100 24.5 l 0 30 l -170 0"></path>
+<g class="liquid__path--clip-container" clip-path="url(#clip-path--liquid)">
+<path class="liquid__path liquid__path--bottom-clip" d="M -70 24.5 C -65.92 18.5 -59.92 18.5 -55.83 24.5 S -45.75 30.5 -41.67 24.5 S -31.58 18.5 -27.5 24.5 S -17.42 30.5 -13.33 24.5 S -3.25 18.5 0.83 24.5 S 10.92 30.5 15 24.5 S 25.08 18.5 29.17 24.5 S 39.25 30.5 43.33 24.5 S 53.42 18.5 57.5 24.5 S 67.58 30.5 71.67 24.5 S 81.75 18.5 85.83 24.5 S 95.92 30.5 100 24.5 l 0 30 l -170 0"></path>
+</g>
+</g>
+</svg>
+</div>
+</div>
+<span class="logo-text">Scotch</span>
+</a>
+<a role="button" class="navbar-burger" data-target="nav-menu" aria-label="menu" aria-expanded="false">
+<span aria-hidden="true"></span>
+<span aria-hidden="true"></span>
+<span aria-hidden="true"></span>
+</a>
+</div>
+<div id="nav-menu" class="navbar-menu">
+<div class="navbar-start">
+<a class="navbar-item " href="/courses" title="Courses">
+<span class="left">Video</span>
+<span class="right">Courses</span>
+</a>
+<a class="navbar-item is-active" href="/tutorials" title="Tutorials">
+<span class="left">Written</span>
+<span class="right">Tutorials</span>
+</a>
+<a class="navbar-item " href="/bar-talk" title="News">
+<span class="left">News</span>
+<span class="right">Bar Talk</span>
+</a>
+<a class="navbar-item " href="/newsletter" title="Weekly Newsletter">
+<span class="left">Weekly</span>
+<span class="right">Newsletter</span>
+</a>
+<a class="navbar-item is-hidden-smaller " href="/books/vue" title="Vue Book">
+<span class="left" style="
+    color: #e7ffe7;
+">Practical</span> <span class="right" style="
+    color: #d8ffd8;
+">Vue Book</span>
+</a>
+<a class="navbar-item is-hidden-smaller " href="/cool-stuff" title="Cool Stuff" style="
+">
+<span class="left" style="
+    color: #ffc4c7;
+">Special Scotch</span> <span class="right" style="
+    color: #ff989e;
+">Deals &amp; Discounts</span>
+</a>
+<div class="navbar-item has-dropdown is-hoverable is-hidden-tablet-only is-hidden-mobile navbar-extra">
+<a class="navbar-link">...</a>
+<div class="navbar-dropdown">
+<a class="navbar-item" href="/about">About</a>
+<a class="navbar-item" href="/code-challenges">Code Challenges</a>
+<a class="navbar-item" href="/newsletter">Newsletter</a>
+<a class="navbar-item" href="https://shop.scotch.io">Shop</a>
+<a class="navbar-item" href="/cool-stuff">Stuff We Use</a>
+<div class="navbar-item">
+<a class="m-r-sm" href="https://twitter.com/scotch_io" title="Follow Scotch on Twitter" aria-label="Follow Scotch on Twitter">
+<i class="fab fa-fw fa-twitter has-text-info"></i>
+</a>
+<a href="https://facebook.com/scotchdevelopment" title="Follow Scotch on Facebook" aria-label="Follow Scotch on Facebook" style="margin-right: 15px;">
+<i class="fab fa-fw fa-facebook has-text-link"></i>
+</a>
+<a href="https://facebook.com/scotchdevelopment" title="Follow Scotch on GitHub" aria-label="Follow Scotch on GitHub">
+<i class="fab fa-fw fa-github-alt has-text-white"></i>
+</a>
+</div>
+</div>
+</div>
+</div>
+<div class="navbar-end">
+<div id="react-search-bar">
+</div>
+<div id="react-user-nav"></div>
+</div>
+</div>
+</nav>
+<nav id="tag-nav" class="navbar is-dark is-hidden-touch">
+<a class="navbar-item color-react" href="/tag/react">
+<span>#</span>react
+</a>
+<a class="navbar-item color-vue" href="/tag/vue">
+<span>#</span>vue
+</a>
+<a class="navbar-item color-angular" href="/tag/angular">
+<span>#</span>angular
+</a>
+<a class="navbar-item color-javascript" href="/tag/javascript">
+<span>#</span>javascript
+</a>
+<a class="navbar-item color-laravel" href="/tag/laravel">
+<span>#</span>laravel
+</a>
+<a class="navbar-item color-css" href="/tag/css">
+<span>#</span>css
+</a>
+<a class="navbar-item color-python" href="/tag/python">
+<span>#</span>python
+</a>
+</nav>
+<div id="react-login-modal"></div>
+<main id="scotchy-main">
+<div id="react-article-tools" data-type="post" data-edit-url="https://my.scotch.io/posts/39898" data-id="39898" data-author-id="40410" data-status="published" data-is-preview="" data-is-community="">
+</div>
+<div id="react-table-of-contents"></div>
+<div id="article-share-buttons">
+<a href="https://github.com/Jordanirabor/django_social_app" target="_blank" rel="noopener noreferrer" class="action-button is-link is-code" title="View Code" data-type="Code" data-title="Django Authentication With Facebook, Instagram and LinkedIn" data-tooltip="Show me the code!">
+<i class="fal fa-code fa-xs" data-fa-transform="shrink-2"></i>
+</a>
+<a href="https://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin?utm_source=scotch&amp;utm_campaign=share&utm_medium=twitter" class="action-button share-button is-social is-twitter m-t" title="Share to Twitter" data-title="Django Authentication With Facebook, Instagram and LinkedIn" data-type="Twitter" data-via="scotch_io" data-tooltip="Chirp chirp">
+<div role="button" aria-label="Twitter"><i class="fab fa-twitter fa-xs" data-fa-transform="right-0.5 down-0.3"></i></div>
+</a>
+<a href="https://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin?utm_source=scotch&amp;utm_campaign=share&utm_medium=facebook" class="action-button share-button is-social is-facebook m-t" title="Share to Facebook" data-title="Django Authentication With Facebook, Instagram and LinkedIn" data-type="Facebook" data-tooltip="Zuck it">
+<div role="button" aria-label="Facebook"><i class="fab fa-facebook fa-xs" data-fa-transform="up-0.2"></i></div>
+</a>
+<a href="https://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin?utm_source=scotch&amp;utm_campaign=share&utm_medium=reddit" class="action-button share-button is-social is-reddit m-t" title="Share to Reddit" data-title="Django Authentication With Facebook, Instagram and LinkedIn" data-type="Reddit" data-tooltip="Karma me">
+<div role="button" aria-label="Reddit"><i class="fab fa-reddit-alien fa-xs" data-fa-transform="left-0.1 up-0.4"></i></div>
+</a>
+</div>
+<article class="article is-post  is-">
+<div class="article-background is-left"></div>
+<div class="article-background is-right"></div>
+<header class="article-header">
+<a href="https://bit.ly/2CDPfg2" id="twitch-banner" class="has-text-centered p-a-sm" style="
+    display: none;
+    background: #493a7a;
+    color: hsl(254, 36%, 90%);
+">
+<i class="fab fa-twitch m-r-sm"></i> We're live-coding on Twitch! Join us!
+</a>
+<section class="
+    hero
+    article-hero
+     is-light      is-javascript     has-feature
+">
+<div class="hero-body p-t-md">
+<div class="container">
+<div class="is-hidden-with-subscription has-text-centered">
+<div id="bsa-zone_1537909991-0_123456"></div>
+</div>
+<div class="article-header is-post p-y">
+<div class="article-header-top m-b">
+<div class="article-title m-b-xs m-t-md">
+<h1 class="title is-2 m-a-0">Django Authentication With Facebook, Instagram and LinkedIn</h1>
+</div>
+<div class="article-byline" style="margin-bottom: 40px;">
+<div class="scotch-line">
+<div class="author">
+<a href="/@JordanIrabor" class="img" title="Jordan Irabor's Avatar" style="background-image: url(https://scotch-res.cloudinary.com/image/upload/w_40,h_40,q_auto:good,f_auto,c_fill,g_face/media/40410/SbYeM6gR3qnxFLcGhgRX_ProfilePic.jpg);">
+</a>
+<a href="/@JordanIrabor" title="Jordan Irabor">
+Jordan Irabor
+</a>
+<a class="m-l-xs" href="https://twitter.com/JordanIrabor" title="Follow @JordanIrabor on Twitter">
+(@JordanIrabor)
+</a>
+</div>
+<time>February 07</time>
+<a href="#comments" class="comment-number" title="Comments on this Article" data-id="39898" data-has-words="true">
+0 Comments
+</a>
+<span class="hotness">
+<span class="pageviews" data-type="post" data-id="39898"></span> Views
+</span>
+<div id="react-bookmark" data-article-type="post" data-article-id="39898" data-article-title="Django Authentication With Facebook, Instagram and LinkedIn">
+</div>
+</div>
+</div>
+</div>
+<div class="columns is-desktop">
+<div class="column is-narrow is-left is-flex" style="flex-basis: 188px; flex-direction: column; justify-content: space-between;">
+<div style="width: 100%">
+<div class="author author-side p-r">
+<a href="/@JordanIrabor" class="img is-block m-b-xs" title="Jordan Irabor's Avatar" style="background-image: url(https://scotch-res.cloudinary.com/image/upload/w_80,h_80,q_auto:good,f_auto,c_fill,g_face/media/40410/SbYeM6gR3qnxFLcGhgRX_ProfilePic.jpg);">
+</a>
+<a href="/@JordanIrabor" title="Jordan Irabor" class="is-block m-b-xs">
+Jordan Irabor
+</a>
+<a id="author-follow-twitter" data-twitter-username="JordanIrabor" href="https://twitter.com/JordanIrabor" title="Follow @JordanIrabor on Twitter" class="button is-outlined is-light is-small is-rounded">
+Follow on Twitter
+</a>
+</div>
+</div>
+<div style="width: 100%">
+<div class="tag-box is-django">
+<a href="/tag/django">
+<span class="tag-label">
+<span class="hash">#</span>django
+</span>
+<span class="tag-count">15</span>
+</a>
+</div>
+<div class="tag-box is-python">
+<a href="/tag/python">
+<span class="tag-label">
+<span class="hash">#</span>python
+</span>
+<span class="tag-count">45</span>
+</a>
+</div>
+<div class="tag-box is-social-media">
+<a href="/tag/social%20media">
+<span class="tag-label">
+<span class="hash">#</span>social media
+</span>
+<span class="tag-count">1</span>
+</a>
+</div>
+</div>
+</div>
+<div class="column">
+<div class="article-feature">
+<div class="article-image is-2by1">
+<img src="https://scotch-res.cloudinary.com/image/upload/w_1000,q_auto:good,f_auto/v1546743603/nib0upqbxynqdgycan7p.png" class="media" alt="Django Authentication With Facebook, Instagram and LinkedIn">
+</div>
+</div>
+</div>
+<div class="column is-narrow is-right is-flex" style="flex-basis: 188px; flex-direction: column; justify-content: space-between;">
+<div style="width: 100%">
+<div id="react-likes" class="p-t" data-article-type="post" data-article-id="39898" data-article-title="Django Authentication With Facebook, Instagram and LinkedIn">
+</div>
+</div>
+</div>
+</div>
+<div class="columns">
+<div class="column is-narrow is-left" style="flex-basis: 188px;"></div>
+<div class="column">
+<div class="article-actions is-post p-t">
+<a href="https://github.com/Jordanirabor/django_social_app" target="_blank" rel="noopener noreferrer" class="button is-scotch is-large is-outlined is-info is-rounded">
+Code
+</a>
+</div>
+</div>
+<div class="column is-narrow is-left" style="flex-basis: 188px;"></div>
+</div>
+</div>
+</div>
+</div>
+<svg class="diagonal" width="100%" height="300px" viewBox="0 0 100 100" preserveAspectRatio="none">
+<polygon fill="#ffffff" points="0,0 0,100 100,100"></polygon>
+</svg>
+</section>
+</header>
+<div class="section content">
+<div class="container m-b-0 is-fluid">
+<div class="columns is-gapless">
+<div class="column is-narrow is-left">
+<div class="article-inner">
+</div>
+</div>
+<div class="column is-middle">
+<div class="article-inner">
+<div class="article-content">
+<h2 id="toc-introduction" class="is-first">
+<a href="#toc-introduction">Introduction</a>
+</h2>
+<div class="table-of-contents"><h3>Table of Contents</h3><ul><li class="two"><a href="#toc-introduction">
+Introduction
+</a></li><li class="two"><a href="#toc-prerequisites">
+Prerequisites
+</a></li><li class="two"><a href="#toc-setting-up-the-django-app">
+Setting up the Django app
+</a></li><li class="three"><a href="#toc-configuring-the-authentication-classes">Configuring the authentication classes</a></li><li class="three"><a href="#toc-adding-templates-and-static-files">Adding templates and static files</a></li><li class="three"><a href="#toc-setting-up-the-views-and-urls">Setting up the Views and URLs</a></li><li class="two"><a href="#toc-facebook-authentication">
+Facebook Authentication
+</a></li><li class="three"><a href="#toc-get-facebook-credentials">Get Facebook Credentials</a></li><li class="two"><a href="#toc-instagram-authentication">
+Instagram Authentication
+</a></li><li class="three"><a href="#toc-get-api-credentials">Get API credentials</a></li><li class="three"><a href="#toc-setup-the-backend">Setup the Backend</a></li><li class="three"><a href="#toc-setup-the-frontend">Setup the Frontend</a></li><li class="two"><a href="#toc-linkedin-authentication">
+Linkedin Authentication
+</a></li><li class="three"><a href="#toc-get-api-credentials">Get API credentials</a></li><li class="three"><a href="#toc-setup-the-backend">Setup the Backend</a></li><li class="three"><a href="#toc-setting-up-frontend">Setting up Frontend</a></li><li class="two"><a href="#toc-conclusion">
+Conclusion
+</a></li></ul></div><p>For users of internet services, there are only a few things worse than having to manually sign in (and sign-up) with different websites. The ordeal of the manual sign-in process can be associated with the difficulty that the user may experience in having to remember multiple strong passwords. </p>
+<p>The inability to remember a password could lead to the creation of multiple accounts on the same platform or the outright switch to browsing as an unauthenticated user (where it doesn&#x2019;t prevent access to the sought-after information or service).</p>
+<p>Modern web applications solve this problem using social authentication, which is primarily a way to allow users to sign in (and sign-up) with the application using login information from a social network provider that they already have an account with.</p>
+<p>In this tutorial, we will build a simple Django application that allows users to sign in via their Facebook, Instagram and LinkedIn accounts. To achieve this, we will use the <code>social-auth-app-django</code> library. We will also learn how to extract additional information such as profile picture and username from the respective social accounts.</p>
+<p>At the end of this tutorial, we will have the final application that works like this:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546743772/sjejgqvkwl2codqlat08.gif"></p>
+<p>The source code for this project is available <a href="https://github.com/Jordanirabor/django_social_app">here</a> on GitHub.</p>
+<h2 id="toc-prerequisites" class="false">
+<a href="#toc-prerequisites">Prerequisites</a>
+</h2>
+<p>You need the following items installed on your machine to follow along with this tutorial:</p>
+<ol>
+<li>Python3</li>
+<li><a href="https://pypi.org/project/pipenv/">Pipenv</a></li>
+</ol>
+<blockquote>
+<p>Pipenv is a production-ready tool that aims to bring the best of all packaging worlds to the Python world. It harnesses Pipfile, pip, and <a href="https://virtualenv.pypa.io/en/latest/">virtualenv</a> into one single command.</p>
+</blockquote>
+<p>This tutorial assumes that the reader has basic working knowledge with Django. You also need to have an account with Facebook, Instagram and LinkedIn. </p>
+<p>Let&#x2019;s dive right in!</p>
+<h2 id="toc-setting-up-the-django-app" class="false">
+<a href="#toc-setting-up-the-django-app">Setting up the Django app</a>
+</h2>
+<p>In this section, we will up a new Django project and install dependencies. Let&#x2019;s start by creating a new folder and making it the present working directory:</p>
+<pre class="language-bash" data-title="bash"><code class="language-bash">    $ <span class="token function">mkdir</span> django_social_app
+    $ <span class="token function">cd</span> django_social_app</code></pre>
+<p>We will create and activate a new virtual environment using Pipenv; this has the effect of creating an isolated Python environment and preventing us from polluting the global package directory when we install Django dependencies. We will also install <code>django</code> and <code>social-auth-app-django</code>:</p>
+<pre class="language-bash" data-title="bash"><code class="language-bash">    $ pipenv shell
+    $ pipenv <span class="token function">install</span> django social-auth-app-django</code></pre>
+<blockquote>
+<p>social-auth-app-django simplifies the implementation of social authentication with Django.</p>
+</blockquote>
+<p>Let&#x2019;s create (and navigate into) a new Django project, we will call it <code>social_app:</code> </p><style>
+.ml-subscribe-form-1112154 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(at top left,#e5d0ad,#d2af73);
+    margin-bottom: 35px;
+    margin-left: -60px;
+    margin-right: -60px;
+    color: #eee;
+    text-align: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    border-radius: 10px !important;
+    box-shadow: 5px 5px 0 hsla(38, 48%, 30%, 0.2);
+}
+
+.ml-subscribe-form-1112154 h4 {
+    font-size: 22px;
+    color: #eee;
+    margin-bottom: 20px;
+}
+</style>
+<div id="mlb2-1112154" class="is-hidden-with-account ml-form-embedContainer ml-subscribe-form ml-subscribe-form-1112154 is-hidden-mobile">
+<div class="ml-form-align-center ">
+<div class="ml-form-embedWrapper embedForm">
+<div class="ml-form-embedBody ml-form-embedBodyDefault row-form">
+<h3 class="m-b-xs m-t-0">Free Node eBook</h3>
+<p class="m-b" style="color: #555;">Build your first Node apps and learn server-side JavaScript.</p>
+<form class="ml-block-form" action="https://app.mailerlite.com/webforms/submit/c7r3j6" data-code="c7r3j6" method="post" target="_blank">
+<style type="text/css">
+              .ml_message_wrapper {
+                position: absolute !important;
+                left: -9999px !important;
+              }
+            </style>
+<div aria-label="Please leave the following field empty" class="ml_message_wrapper">
+<input type="text" name="ml_message" tabindex="-1" value="" placeholder="Message" autocomplete="off" title="message">
+<input type="text" name="ml_email" tabindex="-1" value="" placeholder="Email" autocomplete="off" title="email">
+<input type="text" name="ml_name" tabindex="-1" value="" placeholder="Name" autocomplete="off" title="name">
+</div>
+<div class="field has-addons">
+<div class="control is-expanded has-icons-left ml-field-group ml-field-email ml-validate-email ml-validate-required">
+<input type="email" class="form-control input is-medium" data-inputmask="" name="fields[email]" value="" placeholder="Email" aria-label="Your Email">
+<div class="icon is-small is-left">
+📧
+</div>
+</div>
+<div class="control">
+<button type="submit" class="primary button is-dark is-medium">Get the eBook</button>
+<button disabled style="display: none;" type="button" class="button is-dark is-medium is-loading loading">
+🌟 Magic ✨
+</button>
+</div>
+</div>
+<style type="text/css">
+              .ml-form-recaptcha {
+                margin-bottom: 20px;
+              }
+
+              .ml-form-recaptcha.ml-error iframe {
+                border: solid 1px #ff0000;
+              }
+            </style>
+<input type="hidden" name="ml-submit" value="1">
+</form>
+</div>
+<div class="ml-form-successBody row-success" style="display: none">
+<div class="ml-form-successContent">
+<h3 class="m-b-xs m-t-0">Nice!</h3>
+ <p class="m-b-0" style="color: #555;">Check your email to confirm your subscription.<br><br></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+    function ml_webform_success_1112154() {
+        document.querySelector('.ml-subscribe-form-1112154 .row-success').style.display = 'block';
+        document.querySelector('.ml-subscribe-form-1112154 .row-form').style.display = 'none';
+        // var $ = ml_jQuery || jQuery;
+        // $('.ml-subscribe-form-1112154 .row-success').show();
+        // $('.ml-subscribe-form-1112154 .row-form').hide();
+      }
+  </script>
+<img class="lazy" data-src="https://track.mailerlite.com/webforms/o/1112154/c7r3j6?vaa4d608450783acdc64d5338ff94f6d5" width="1" height="1" style="max-width: 1px; max-height: 1px; visibility: hidden; padding: 0; margin: 0; display: block;" border="0">
+<pre class="language-bash" data-title="bash"><code class="language-bash">    $ <span class="token punctuation">(</span>django_social_app<span class="token punctuation">)</span> $ django-admin startproject social_app
+    $ <span class="token punctuation">(</span>django_social_app<span class="token punctuation">)</span> $ <span class="token function">cd</span> social_app</code></pre>
+<blockquote>
+<p>Note: It is important that we run the commands from the terminal that is sourced into the virtual environment i.e displays (django_social_app) at the beginning of each command line.</p>
+</blockquote>
+<p>Next, we will create a Django application called <code>core</code>, this application will contain all our views and templates:</p>
+<pre class="language-bash" data-title="bash"><code class="language-bash">    <span class="token punctuation">(</span>django_social_app<span class="token punctuation">)</span> $ python manage.py startapp core</code></pre>
+<blockquote>
+<p>Note: You need to be in the parent social_app directory to run &#x2018;python manage.py *&#x2019; commands.</p>
+</blockquote>
+<p>Let&#x2019;s find the <code>settings.py</code> file in the <code>social_app</code> project and add both <code>core</code> and <code>social-auth-app-django</code> as <code>INSTALLED_APPS</code>:</p>
+<pre class="language-python" data-title="python"><code class="language-python">    <span class="token comment">#social_app/settings.py</span>
+
+    INSTALLED_APPS <span class="token operator">=</span> <span class="token punctuation">[</span>
+        <span class="token string">&apos;django.contrib.admin&apos;</span><span class="token punctuation">,</span>
+        <span class="token string">&apos;django.contrib.auth&apos;</span><span class="token punctuation">,</span>
+        <span class="token string">&apos;django.contrib.contenttypes&apos;</span><span class="token punctuation">,</span>
+        <span class="token string">&apos;django.contrib.sessions&apos;</span><span class="token punctuation">,</span>
+        <span class="token string">&apos;django.contrib.messages&apos;</span><span class="token punctuation">,</span>
+        <span class="token string">&apos;django.contrib.staticfiles&apos;</span><span class="token punctuation">,</span>
+        <span class="token string">&apos;social_django&apos;</span><span class="token punctuation">,</span> <span class="token comment"># add this </span>
+        <span class="token string">&apos;core&apos;</span> <span class="token comment"># add this</span>
+      <span class="token punctuation">]</span></code></pre>
+<p>Finally, let&#x2019;s migrate the database:</p>
+<pre class="language-bash" data-title="bash"><code class="language-bash">    <span class="token punctuation">(</span>django_social_app<span class="token punctuation">)</span> $ python manage.py migrate</code></pre>
+<h3 id="toc-configuring-the-authentication-classes">Configuring the authentication classes</h3>
+<p>Behind the scenes, Django maintains a list of &#x201C;authentication backends&#x201D; that it checks during user authentication. If the first authentication method fails, Django tries the second one, and so on, until all backends have been attempted. </p>
+<p>The <code>AUTHENTICATION_BACKENDS</code> array contains a list of authentication backend classes (as strings) and is by default set to:</p>
+<pre class="language-python" data-title="python"><code class="language-python">    <span class="token punctuation">[</span><span class="token string">&apos;django.contrib.auth.backends.ModelBackend&apos;</span><span class="token punctuation">]</span></code></pre>
+<p>We can update it and add new authentication classes in order to allow authentication with the social platforms we are considering in this tutorial.</p>
+<p>To update it this, simply add the following code in the <code>settings.py</code> file:</p>
+<pre class="language-python" data-title="python"><code class="language-python">    <span class="token comment">#social_app/settings.py</span>
+
+    <span class="token comment">#add this</span>
+    AUTHENTICATION_BACKENDS <span class="token operator">=</span> <span class="token punctuation">[</span>
+        <span class="token string">&apos;social_core.backends.linkedin.LinkedinOAuth2&apos;</span><span class="token punctuation">,</span>
+        <span class="token string">&apos;social_core.backends.instagram.InstagramOAuth2&apos;</span><span class="token punctuation">,</span>
+        <span class="token string">&apos;social_core.backends.facebook.FacebookOAuth2&apos;</span><span class="token punctuation">,</span>
+        <span class="token string">&apos;django.contrib.auth.backends.ModelBackend&apos;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span></code></pre>
+<p>We just added the authentication backend classes for Linkedin, Instagram and Facebook. </p>
+<blockquote>
+<p>You can find a list of the authentication backends classes supported by social-auth-app-django <a href="https://python-social-auth-docs.readthedocs.io/en/latest/backends/index.html#social-backends">here.</a></p>
+</blockquote>
+<h3 id="toc-adding-templates-and-static-files">Adding templates and static files</h3>
+<p>We&#x2019;ve only worked on setting up and configuring the application, let&#x2019;s move on to something visual now. In this section, we will build the foundation of the templates that will display the application.</p>
+<p>Let&#x2019;s create a new folder in the <code>core</code>directory, we will call this folder <code>templates</code>:</p>
+<pre class="language-bash" data-title="bash"><code class="language-bash">    <span class="token punctuation">(</span>django_social_app<span class="token punctuation">)</span> $ <span class="token function">cd</span> core/
+    <span class="token punctuation">(</span>django_social_app<span class="token punctuation">)</span> $ <span class="token function">mkdir</span> templates/</code></pre>
+<p>Create three files within the <code>templates</code> directory and call them:</p>
+<ol>
+<li><code>base.html</code> </li>
+<li><code>login.html</code> </li>
+<li><code>home.html</code> </li>
+</ol>
+<p>Now, open the <code>base.html</code> file and paste in the following snippet:</p>
+<pre class="language-markup" data-title="markup"><code class="language-markup">    <span class="token comment">&lt;!-- templates/base.html --&gt;</span>
+
+    {% load static %}
+    <span class="token doctype">&lt;!DOCTYPE html&gt;</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span> <span class="token attr-name">lang</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>en<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>UTF-8<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>viewport<span class="token punctuation">&quot;</span></span> <span class="token attr-name">content</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>width=device-width, initial-scale=1.0<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">http-equiv</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>X-UA-Compatible<span class="token punctuation">&quot;</span></span> <span class="token attr-name">content</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>ie=edge<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>stylesheet<span class="token punctuation">&quot;</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css<span class="token punctuation">&quot;</span></span> <span class="token attr-name">integrity</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO<span class="token punctuation">&quot;</span></span>
+            <span class="token attr-name">crossorigin</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>anonymous<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>stylesheet<span class="token punctuation">&quot;</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{% static <span class="token punctuation">&apos;</span>css/index.css<span class="token punctuation">&apos;</span> %}<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">&gt;</span></span>Social Auth with Django<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>container-fluid<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>text-white text-center<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>{% block title %}{% endblock %}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>card p-5<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                    {% block content %}
+                    {% endblock %}
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">&gt;</span></span></code></pre>
+<p>Paste in the following snippet in the <code>login.html</code> file:</p>
+<pre class="language-markup" data-title="markup"><code class="language-markup">   <span class="token comment">&lt;!-- templates/login.html --&gt;</span>
+
+    {% extends &apos;base.html&apos; %}
+    {% block title %} Sign in {% endblock %}
+    {% block content %}
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>row<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-md-8 mx-auto social-container my-2 order-md-1<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>btn btn-danger  mb-2<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>#<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>Login with Instagram<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>btn btn-primary mb-2<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>#<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>Login with Facebook
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>btn btn-info mb-2<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>#<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>Login with LinkedIn<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+    {% endblock %}</code></pre>
+<p>Lastly, update the <code>home.html</code> file with the code below:</p>
+<pre class="language-markup" data-title="markup"><code class="language-markup">    <span class="token comment">&lt;!-- templates/home.html --&gt;</span>
+
+    {% extends &apos;base.html&apos; %}
+    {% block title %} Home {% endblock %}
+    {% block content %}
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>row<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-sm-12 mb-3<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h4</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>text-center<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span> Welcome {{ user.username }} <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h4</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+    {% endblock %}</code></pre>
+<p>We need some styles to help our code look nice when rendered, so let&#x2019;s create a folder called <code>static</code> in the root of the <code>core</code> folder and we will store our styles there. </p>
+<p>Create a folder called <code>css</code> folder within the <code>static</code> directory and finally, create an <code>index.css</code> file within the <code>css</code> folder.</p>
+<p>Now open the <code>index.css</code> file and update it with the following code:</p>
+<pre class="language-css" data-title="css"><code class="language-css">    <span class="token selector">/_ index<span class="token class">.css</span> _/
+
+    img </span><span class="token punctuation">{</span>
+      <span class="token property">border</span><span class="token punctuation">:</span> <span class="token number">3</span>px solid <span class="token hexcode">#282c34</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token selector"><span class="token class">.container-fluid</span> </span><span class="token punctuation">{</span>
+      <span class="token property">height</span><span class="token punctuation">:</span> <span class="token number">100</span>vh<span class="token punctuation">;</span>
+      <span class="token property">background-color</span><span class="token punctuation">:</span> <span class="token hexcode">#282c34</span><span class="token punctuation">;</span>
+      <span class="token property">display</span><span class="token punctuation">:</span> flex<span class="token punctuation">;</span>
+      <span class="token property">justify-content</span><span class="token punctuation">:</span> center<span class="token punctuation">;</span>
+      <span class="token property">align-items</span><span class="token punctuation">:</span> center<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token selector"><span class="token class">.container-fluid</span> &gt; div </span><span class="token punctuation">{</span>
+      <span class="token property">width</span><span class="token punctuation">:</span> <span class="token number">85%</span><span class="token punctuation">;</span>
+      <span class="token property">min-width</span><span class="token punctuation">:</span> <span class="token number">300</span>px<span class="token punctuation">;</span>
+      <span class="token property">max-width</span><span class="token punctuation">:</span> <span class="token number">500</span>px<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token selector"><span class="token class">.card</span> </span><span class="token punctuation">{</span>
+      <span class="token property">width</span><span class="token punctuation">:</span> <span class="token number">100%</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token selector"><span class="token class">.social-container</span> </span><span class="token punctuation">{</span>
+      <span class="token property">display</span><span class="token punctuation">:</span> flex<span class="token punctuation">;</span>
+      <span class="token property">flex-direction</span><span class="token punctuation">:</span> column<span class="token punctuation">;</span>
+      <span class="token property">justify-content</span><span class="token punctuation">:</span> center<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token selector"><span class="token class">.btn</span> a, <span class="token class">.btn</span> a<span class="token pseudo-class">:hover</span> </span><span class="token punctuation">{</span>
+      <span class="token property">color</span><span class="token punctuation">:</span> white<span class="token punctuation">;</span>
+      <span class="token property">text-decoration</span><span class="token punctuation">:</span> none <span class="token punctuation">;</span>
+    <span class="token punctuation">}</span></code></pre>
+<h3 id="toc-setting-up-the-views-and-urls">Setting up the Views and URLs</h3>
+<p>In this section, we will define the Views and register the URLs that the application needs to work, so open the <code>core/views.py</code> file and replace its content with the snippet below:</p>
+<pre class="language-python" data-title="python"><code class="language-python">    <span class="token comment"># core/views.py</span>
+
+    <span class="token keyword">from</span> django<span class="token punctuation">.</span>shortcuts <span class="token keyword">import</span> render
+    <span class="token keyword">from</span> django<span class="token punctuation">.</span>contrib<span class="token punctuation">.</span>auth<span class="token punctuation">.</span>decorators <span class="token keyword">import</span> login_required
+
+    <span class="token comment"># Create your views here.</span>
+    <span class="token keyword">def</span> <span class="token function">login</span><span class="token punctuation">(</span>request<span class="token punctuation">)</span><span class="token punctuation">:</span>
+      <span class="token keyword">return</span> render<span class="token punctuation">(</span>request<span class="token punctuation">,</span> <span class="token string">&apos;login.html&apos;</span><span class="token punctuation">)</span>
+
+    @login_required
+    <span class="token keyword">def</span> <span class="token function">home</span><span class="token punctuation">(</span>request<span class="token punctuation">)</span><span class="token punctuation">:</span>
+      <span class="token keyword">return</span> render<span class="token punctuation">(</span>request<span class="token punctuation">,</span> <span class="token string">&apos;home.html&apos;</span><span class="token punctuation">)</span></code></pre>
+<p>Next, we will register the routes for the application and attach their matching view functions. Replace the content of the <code>social_app/urls.py</code> file with the code below:</p>
+<pre class="language-python" data-title="python"><code class="language-python">    <span class="token comment"># social_app/urls.py</span>
+
+    <span class="token keyword">from</span> django<span class="token punctuation">.</span>contrib <span class="token keyword">import</span> admin
+    <span class="token keyword">from</span> django<span class="token punctuation">.</span>urls <span class="token keyword">import</span> path<span class="token punctuation">,</span> include
+    <span class="token keyword">from</span> django<span class="token punctuation">.</span>contrib<span class="token punctuation">.</span>auth <span class="token keyword">import</span> views <span class="token keyword">as</span> auth_views
+    <span class="token keyword">from</span> core <span class="token keyword">import</span> views
+
+    urlpatterns <span class="token operator">=</span> <span class="token punctuation">[</span>
+        path<span class="token punctuation">(</span><span class="token string">&apos;admin/&apos;</span><span class="token punctuation">,</span> admin<span class="token punctuation">.</span>site<span class="token punctuation">.</span>urls<span class="token punctuation">)</span><span class="token punctuation">,</span>         path<span class="token punctuation">(</span><span class="token string">&quot;login/&quot;</span><span class="token punctuation">,</span> views<span class="token punctuation">.</span>login<span class="token punctuation">,</span> name<span class="token operator">=</span><span class="token string">&quot;login&quot;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        path<span class="token punctuation">(</span><span class="token string">&quot;logout/&quot;</span><span class="token punctuation">,</span> auth_views<span class="token punctuation">.</span>LogoutView<span class="token punctuation">.</span>as_view<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> name<span class="token operator">=</span><span class="token string">&quot;logout&quot;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        path<span class="token punctuation">(</span><span class="token string">&apos;social-auth/&apos;</span><span class="token punctuation">,</span> include<span class="token punctuation">(</span><span class="token string">&apos;social_django.urls&apos;</span><span class="token punctuation">,</span> namespace<span class="token operator">=</span><span class="token string">&quot;social&quot;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        path<span class="token punctuation">(</span><span class="token string">&quot;&quot;</span><span class="token punctuation">,</span> views<span class="token punctuation">.</span>home<span class="token punctuation">,</span> name<span class="token operator">=</span><span class="token string">&quot;home&quot;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span></code></pre>
+<p>In the <code>settings.py</code> file, we need to set four new values &#x2014; <code>LOGIN_URL</code>, <code>LOGOUT_URL</code>, <code>LOGIN_REDIRECT_URL</code> and <code>LOGOUT_REDIRECT_URL</code> &#x2014; because they will be used in redirecting the user when authentication is complete:</p>
+<pre class="language-python" data-title="python"><code class="language-python">    <span class="token comment"># social_app/settings.py</span>
+
+    <span class="token comment"># [...]</span>
+
+    LOGIN_URL <span class="token operator">=</span> <span class="token string">&apos;login&apos;</span>
+    LOGIN_REDIRECT_URL <span class="token operator">=</span> <span class="token string">&apos;home&apos;</span>
+    LOGOUT_URL <span class="token operator">=</span> <span class="token string">&apos;logout&apos;</span>
+    LOGOUT_REDIRECT_URL <span class="token operator">=</span> <span class="token string">&apos;login&apos;</span>
+
+    <span class="token comment"># [...]</span></code></pre>
+<p>Fantastic! We can now run the application to see what we&#x2019;ve built so far. Let&#x2019;s start the server with this command:</p>
+<pre class="language-bash" data-title="bash"><code class="language-bash">    <span class="token punctuation">(</span>django_social_app<span class="token punctuation">)</span> $ python manage.py runserver</code></pre>
+<blockquote>
+<p>Note: You need to be in the parent social_app directory to run &#x2018;python manage.py *&#x2019; commands.</p>
+</blockquote>
+<p>We can view the application on <a href="http://localhost:8000">http://localhost:8000</a>, though we will be redirected to <code>/login</code> since we aren&apos;t authenticated:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546743842/ugpbcs2t7uftaliftezw.png"></p>
+<p>Looking good! In the next sections, we will register our application with the social network providers so that users can be authenticated via social platforms.</p>
+<h2 id="toc-facebook-authentication" class="false">
+<a href="#toc-facebook-authentication">Facebook Authentication</a>
+</h2>
+<p>In this section, we will do the heavy lifting and set up authentication via Facebook.</p>
+<h3 id="toc-get-facebook-credentials">Get Facebook Credentials</h3>
+<p>Head over to the Facebook Developers&#x2019; <a href="https://developers.facebook.com/apps">page</a>, after signing in, click on <strong>Add a New App</strong> and enter the details for the app on the modal window that appears:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546743865/lfpxqspmzz0o6naaeeju.png">
+Once the app has been created, you will be redirected to the application&#x2019;s dashboard. On the left side of the screen, click on** Settings<strong>, then click on the **Basic</strong> option that appears directly underneath it. </p>
+<p>When the new screen loads, under the <strong>App Domains</strong> section, add <code>localhost</code> like this:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546743882/n6yoh4yzjorflw1fq3xu.png"></p>
+<p>Now scroll down until you see an option that says <strong>Add Platform</strong>, Click on it and select the <strong>Website</strong> option. This will create a website section where you will see <strong>Site URL</strong>, add <code>http://localhost:8000/</code> in the input and click on the <strong>Save Changes</strong> button:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546743896/gipbptajiqwb08mt9xco.png"></p>
+<p>Now, copy the App ID and App secret from the applications dashboard and add them to the <code>settings.py</code> file:</p>
+<pre class="language-python" data-title="python"><code class="language-python">    <span class="token comment"># social_app/settings.py</span>
+
+    <span class="token comment">#[...]</span>
+
+    SOCIAL_AUTH_FACEBOOK_KEY <span class="token operator">=</span> YOUR_APP_KRY        <span class="token comment"># App ID</span>
+    SOCIAL_AUTH_FACEBOOK_SECRET <span class="token operator">=</span> YOUR_APP_SECRET  <span class="token comment"># App Secret</span>
+
+    <span class="token comment">#[...]</span></code></pre>
+<blockquote>
+<p>Replace the YOUR_APP_* keys with the values from your Facebook application dashboard.</p>
+</blockquote>
+<p>Let&#x2019;s update the <code>URL</code> of the <strong>Login with Facebook</strong> button in <code>login.html</code> file with this one:</p>
+<pre class="language-markup" data-title="markup"><code class="language-markup">    <span class="token comment">&lt;!-- templates/login.html --&gt;</span>
+
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>btn btn-primary mb-2<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{% url <span class="token punctuation">&apos;</span>social:begin<span class="token punctuation">&apos;</span> <span class="token punctuation">&apos;</span>facebook<span class="token punctuation">&apos;</span> %}<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>Login with Facebook<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span></code></pre>
+<p>Start up the web server and visit <code>localhost:8000/login</code> to test that we can now log into the application via Facebook:</p>
+<pre class="language-bash" data-title="bash"><code class="language-bash">    <span class="token punctuation">(</span>django_social_app<span class="token punctuation">)</span> $ python manage.py runserver</code></pre>
+<blockquote>
+<p> Note: You need to be in the parent social_app directory to run &#x2018;python manage.py *&#x2019; commands.</p>
+</blockquote>
+<p>When we click on the <strong>Login with Facebook</strong> button, we should be redirected to a page similar to the one below:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546743910/xvr8pucfthwg3wc9xl7j.png"></p>
+<p>Clicking on <strong>Continue as USERNAME</strong> will redirect to the home page and your username will be displayed. We have successfully been authenticated via Facebook:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546743922/tkoaviasu6ovl4hy7dpc.png">
+Want to know what just happened behind the scenes? Let&#x2019;s find out; we will create a superuser account to access the admin panel:</p>
+<pre class="language-bash" data-title="bash"><code class="language-bash">    <span class="token punctuation">(</span>django_social_app<span class="token punctuation">)</span> $ python manage.py createsuperuser</code></pre>
+<blockquote>
+<p>You will get a prompt to enter a username, email and password for the superuser. Be sure to enter details that you can remember because you will need them to log in to the admin dashboard shortly.</p>
+</blockquote>
+<p>After creating the superuser account, we will run the server and visit the admin panel on this address &#x2014; <a href="http://localhost:8000/admin/">http://localhost:8000/admin/</a>:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546743938/d4u6mhez30esodunsq6v.png">
+We can see that a new User (besides the superuser) has been created in the <strong>Users</strong> category:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546743950/vvmyc4s1xtvadwipogfr.png"></p>
+<p>We will also see that there is a new account under the <strong>User social auths</strong> category: </p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546743967/blm9g1bqsyjhsrcsmrie.png"></p>
+<p>The explanation for the existence of these new accounts is: When a user logs into the application using Facebook (or any social network provider), a new <strong>User</strong> and <strong>User Social Auth</strong> instance are created. The <strong>User Social Auth</strong> is linked to the <strong>User</strong> account the first time, then subsequently, the <strong>User</strong> instance is simply queried from the database.</p>
+<p>The <strong>User</strong> instance is created using the details received from the social network provider. In this case, Facebook sent back the <code>first_name</code> and <code>last_name</code> fields of the created <strong>User</strong> Instance, and the username is a concatenation of the <code>first_name</code> and <code>last_name</code>. </p>
+<p>Some social providers (like Instagram) will return the user&#x2019;s username on their platform and this is used (instead of the concatenation) for the created <strong>User</strong> instance on the application.</p>
+<p>We don&#x2019;t want our application to just display a username, we want to get additional *<em>User *</em>data such as profile picture, so let&#x2019;s request for extra data from Facebook.</p>
+<blockquote>
+<p> Note: You will need to log out from the admin panel to continue.</p>
+</blockquote>
+<p>Open the <code>settings.py</code> file and update it accordingly: </p>
+<pre class="language-python" data-title="python"><code class="language-python">    <span class="token comment"># settings.py</span>
+
+    TEMPLATES <span class="token operator">=</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span>
+            <span class="token string">&apos;BACKEND&apos;</span><span class="token punctuation">:</span> <span class="token string">&apos;django.template.backends.django.DjangoTemplates&apos;</span><span class="token punctuation">,</span>
+            <span class="token string">&apos;DIRS&apos;</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+            <span class="token string">&apos;APP_DIRS&apos;</span><span class="token punctuation">:</span> <span class="token boolean">True</span><span class="token punctuation">,</span>
+            <span class="token string">&apos;OPTIONS&apos;</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+                <span class="token string">&apos;context_processors&apos;</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>
+                    <span class="token string">&apos;django.template.context_processors.debug&apos;</span><span class="token punctuation">,</span>
+                    <span class="token string">&apos;django.template.context_processors.request&apos;</span><span class="token punctuation">,</span>
+                    <span class="token string">&apos;django.contrib.auth.context_processors.auth&apos;</span><span class="token punctuation">,</span>
+                    <span class="token string">&apos;django.contrib.messages.context_processors.messages&apos;</span><span class="token punctuation">,</span>
+                    <span class="token string">&apos;social_django.context_processors.backends&apos;</span><span class="token punctuation">,</span> <span class="token comment"># add this</span>
+                    <span class="token string">&apos;social_django.context_processors.login_redirect&apos;</span><span class="token punctuation">,</span> <span class="token comment"># add this</span>
+                <span class="token punctuation">]</span><span class="token punctuation">,</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span>
+
+    SOCIAL_AUTH_FACEBOOK_KEY <span class="token operator">=</span> YOUR_APP_SECRET          <span class="token comment"># App ID</span>
+    SOCIAL_AUTH_FACEBOOK_SECRET <span class="token operator">=</span> YOUR_APP_SECRET       <span class="token comment"># App Secret</span>
+    SOCIAL_AUTH_FACEBOOK_SCOPE <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">&apos;email&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;user_link&apos;</span><span class="token punctuation">]</span> <span class="token comment"># add this</span>
+    SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS <span class="token operator">=</span> <span class="token punctuation">{</span>       <span class="token comment"># add this</span>
+      <span class="token string">&apos;fields&apos;</span><span class="token punctuation">:</span> <span class="token string">&apos;id, name, email, picture.type(large), link&apos;</span>
+    <span class="token punctuation">}</span>
+    SOCIAL_AUTH_FACEBOOK_EXTRA_DATA <span class="token operator">=</span> <span class="token punctuation">[</span>                 <span class="token comment"># add this</span>
+        <span class="token punctuation">(</span><span class="token string">&apos;name&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;name&apos;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">(</span><span class="token string">&apos;email&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;email&apos;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">(</span><span class="token string">&apos;picture&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;picture&apos;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">(</span><span class="token string">&apos;link&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;profile_url&apos;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span></code></pre>
+<blockquote>
+<p> Replace the YOUR_APP_* keys with the values from your Facebook application dashboard.</p>
+</blockquote>
+<p>The <code>social_django</code> context processors help in adding backend and associations data to template context. This makes it easy for us to access data about the authenticated user using template tags. You can read more about it <a href="https://python-social-auth-docs.readthedocs.io/en/latest/configuration/django.html#template-context-processors">here</a>.</p>
+<p>When a user logs into the application via Facebook, we can access a subset of the user&#x2019;s data using permissions; permissions are how we ask if we can access the data on Facebook. In the code above, <code>SOCIAL_AUTH_FACEBOOK_SCOPE</code> contains a list of permissions to access the data properties our application requires. The <code>email</code> and user_link permissions request access to the user&#x2019;s Facebook email and profile link respectively.</p>
+<p>Let&#x2019;s start the server now, visit <a href="http://localhost:8000/login/">http://localhost:8000/login/</a>, and attempt logging in via Facebook:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546743983/slnmjd462js2q4r1ri4f.png"></p>
+<blockquote>
+<p>Clicking on Continue as USERNAME will grant the application access to user&#x2019;s private data on Facebook and for this reason, to request for some permissions, you will need to submit your application to be reviewed by the Facebook team to ensure that the returned data isn&#x2019;t misused. You can find the list of Facebook permissions <a href="https://developers.facebook.com/docs/facebook-login/permissions">here.</a></p>
+</blockquote>
+<p><code>SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS</code> has a key &#x2014; <code>fields</code> &#x2014; where the value is a list of attributes that should be returned by Facebook when the user has successfully logged in. The values are dependent on <code>SOCIAL_AUTH_FACEBOOK_SCOP</code> .</p>
+<p>When a user logs in using Facebook, the Facebook API returns the data requested in <code>SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS</code>. To store the data in the database, we need to specify them in <code>SOCIAL_AUTH_FACEBOOK_EXTRA_DATA</code>. </p>
+<p>The extra data will be stored in the <code>extra_data</code>field of the <strong>User Social Auth</strong> instance:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546743996/nzb0w7i8gmhkbchbyzre.png">
+Now, let&#x2019;s update the frontend to display the extra data we received from Facebook, we will open the <code>home.html</code> file and replace its content with this one:</p>
+<pre class="language-markup" data-title="markup"><code class="language-markup"><span class="token comment">&lt;!-- home.html --&gt;</span>
+
+    {% extends &apos;base.html&apos; %}
+    {% block title %} Home {% endblock %}
+    {% block content %}
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>row<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-sm-12 mb-3<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h4</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>text-center<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>Welcome {{ user.username }}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h4</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+
+            <span class="token comment">&lt;!-- Add from here --&gt;</span>
+        {% for ass in backends.associated %}
+          {% if ass.provider == &apos;facebook&apos; %}
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-md-6 text-center<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{{ass.extra_data.picture.data.url}}<span class="token punctuation">&quot;</span></span> <span class="token attr-name">alt</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span><span class="token punctuation">&quot;</span></span> <span class="token attr-name">width</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>150<span class="token punctuation">&quot;</span></span> <span class="token attr-name">height</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>150<span class="token punctuation">&quot;</span></span> <span class="token attr-name">style</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>border-radius: 50%<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-md-6 social-container my-2<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>                 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span> Signed in via:  {{ ass.provider }} <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span> Name:  {{ ass.extra_data.name }} <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span> Provider url: <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{{ass.extra_data.profile_url}}<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>link<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+          {% endif %}
+        {% endfor %}
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-sm-12 mt-2 text-center<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>btn btn-danger<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{% url <span class="token punctuation">&apos;</span>logout<span class="token punctuation">&apos;</span> %}<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>Logout<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span>
+          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+            <span class="token comment">&lt;!-- End here --&gt;</span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+    {% endblock %}</code></pre>
+<p>Now we can visit the application&#x2019;s home address &#x2014; <a href="http://localhost:8000/">http://localhost:8000/</a> &#x2014; on a web browser and see the extra data:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546744012/pcujz28ixl3cs04p1vxh.png"></p>
+<blockquote>
+<p>Note: We now have access to the data that gets stored in the `extra_data` field because we added the context processors to `TEMPLATES`; this enables us to access `backends` data in the frontend. </p>
+</blockquote>
+<p>Congratulations! we have successfully authenticated via Facebook and can now move on to setting up the next social network provider.</p>
+<h2 id="toc-instagram-authentication" class="false">
+<a href="#toc-instagram-authentication">Instagram Authentication</a>
+</h2>
+<p>Seeing that we&#x2019;ve gone into details on how things work behind the scene, we can set up the Instagram authentication in just three steps:</p>
+<ul>
+<li><p>Get API credentials</p>
+</li>
+<li><p>Setup the backend</p>
+</li>
+<li><p>Setup the frontend</p>
+</li>
+</ul>
+<p>Let&#x2019;s go!</p>
+<h3 id="toc-get-api-credentials">Get API credentials</h3>
+<p>Let&#x2019;s visit the Instagram developers <a href="https://www.instagram.com/developer/">page</a> and click on <strong>Register Your Application:</strong></p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546744045/mll5ybh6jd9cywkirqxg.png"></p>
+<p>On the screen that comes up next, click on <strong>Register a New Client</strong> and fill out the details for the application:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546744060/sgkvitc5j5a2bks8remw.png"></p>
+<blockquote>
+<p> Note: Instagram (and most social network providers) require a redirect URL which will be the address the user&#x2019;s browser will be directed to after the authentication. For this tutorial, we will use this address <a href="http://localhost:8000/social-auth/complete/instagram/">http://localhost:8000/social-auth/complete/instagram/</a>. You can learn more about this <a href="https://www.oauth.com/oauth2-servers/redirect-uris/">here</a>.</p>
+</blockquote>
+<p>Successful registration of the application will return a screen like this:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546744074/akhw7zzmf4nezi7v2n4h.png">
+Now, we will click on the <strong>Manage</strong> option to get the application&#x2019;s Client ID and Client Secret:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546744087/ye4gesajbfk19ja8e02u.png"></p>
+<blockquote>
+<p>Note: We need the ID and the Secret to configure the backend.</p>
+</blockquote>
+<h3 id="toc-setup-the-backend">Setup the Backend</h3>
+<p>Let&#x2019;s add this code to the <code>settings.py</code> file:</p>
+<pre class="language-python" data-title="python"><code class="language-python">    <span class="token comment"># settings.py</span>
+
+    <span class="token comment">#[...]</span>
+
+    <span class="token comment"># add this code</span>
+    SOCIAL_AUTH_INSTAGRAM_KEY <span class="token operator">=</span> YOUR_CLIENT_ID         <span class="token comment">#Client ID</span>
+    SOCIAL_AUTH_INSTAGRAM_SECRET <span class="token operator">=</span> YOUR_CLIENT_SECRET  <span class="token comment">#Client SECRET</span>
+    SOCIAL_AUTH_INSTAGRAM_EXTRA_DATA <span class="token operator">=</span> <span class="token punctuation">[</span>         <span class="token punctuation">(</span><span class="token string">&apos;user&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;user&apos;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span>
+
+    <span class="token comment">#[...]</span></code></pre>
+<blockquote>
+<p>Replace the YOUR_CLIENT_* keys with the values from your Instagram application.</p>
+</blockquote>
+<p>With the code above, once a user is authenticated via Instagram, a <code>user</code> object will be sent back to the application. We add this object to <code>SOCIAL_AUTH_INSTAGRAM_EXTRA_DATA</code> because we want it to be stored in the database for easy reference. </p>
+<p>The <code>user</code> object is returned in this format:</p>
+<pre class="language-json" data-title="json"><code class="language-json">    <span class="token punctuation">{</span>
+      <span class="token property">&quot;id&quot;</span><span class="token operator">:</span> ...<span class="token punctuation">,</span>
+      <span class="token property">&quot;username&quot;</span><span class="token operator">:</span> ...<span class="token punctuation">,</span>
+      <span class="token property">&quot;profile_picture&quot;</span><span class="token operator">:</span> ...<span class="token punctuation">,</span>
+      <span class="token property">&quot;full_name&quot;</span><span class="token operator">:</span> ...<span class="token punctuation">,</span>
+      <span class="token property">&quot;bio&quot;</span><span class="token operator">:</span> ...<span class="token punctuation">,</span>
+      <span class="token property">&quot;website&quot;</span><span class="token operator">:</span> ...<span class="token punctuation">,</span>
+      <span class="token property">&quot;is_business&quot;</span><span class="token operator">:</span> ...<span class="token punctuation">,</span>
+    <span class="token punctuation">}</span></code></pre>
+<h3 id="toc-setup-the-frontend">Setup the Frontend</h3>
+<p>We want to display a nice UI for when a user is authenticated via Instagram so let&#x2019;s replace the content of the <code>home.html</code> file with the code below:</p>
+<pre class="language-markup" data-title="markup"><code class="language-markup">   <span class="token comment">&lt;!-- home.html --&gt;</span>
+
+    {% extends &apos;base.html&apos; %}
+    {% block title %} Home {% endblock %}
+    {% block content %}
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>row<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-sm-12 mb-3<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h4</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>text-center<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>Welcome {{ user.username }}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h4</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+        <span class="token comment">&lt;!-- Add from here --&gt;</span>
+        {% for ass in backends.associated %}
+          {% if ass.provider == &apos;facebook&apos; %}
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-md-6 text-center<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{{ass.extra_data.picture.data.url}}<span class="token punctuation">&quot;</span></span> <span class="token attr-name">alt</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span><span class="token punctuation">&quot;</span></span> <span class="token attr-name">width</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>150<span class="token punctuation">&quot;</span></span> <span class="token attr-name">height</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>150<span class="token punctuation">&quot;</span></span> <span class="token attr-name">style</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>border-radius: 50%<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-md-6 social-container my-2<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>                 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span> Signed in via:  {{ ass.provider }} <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span> Name:  {{ ass.extra_data.name }} <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span> Provider url: <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{{ass.extra_data.profile_url}}<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>link<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+          {% endif %}
+          <span class="token comment">&lt;!-- Add from here --&gt;</span>
+          {% if ass.provider == &apos;instagram&apos; %}
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-md-6 text-center<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>               <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{{ ass.extra_data.user.profile_picture }}<span class="token punctuation">&quot;</span></span> <span class="token attr-name">alt</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span><span class="token punctuation">&quot;</span></span> <span class="token attr-name">width</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>150<span class="token punctuation">&quot;</span></span> <span class="token attr-name">height</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>150<span class="token punctuation">&quot;</span></span> <span class="token attr-name">style</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>border-radius: 50%<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>             <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-md-6 social-container my-2<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span>Signed in via: {{ ass.provider }} <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span> Name:  {{ ass.extra_data.user.full_name }} <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span>Provider url: <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>https://instagram.com/{{ ass.username }}<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>link<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+          {% endif %}
+          <span class="token comment">&lt;!-- End here --&gt;</span>
+        {% endfor %}
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-sm-12 mt-2 text-center<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>btn btn-danger<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{% url <span class="token punctuation">&apos;</span>logout<span class="token punctuation">&apos;</span> %}<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>Logout<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+        <span class="token comment">&lt;!-- End here --&gt;</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+    {% endblock %}</code></pre>
+<p>Let&#x2019;s update the <code>URL</code> of the *<em>Login with Instagram *</em>button in <code>login.html</code> file:</p>
+<pre class="language-markup" data-title="markup"><code class="language-markup">    <span class="token comment">&lt;!-- templates/login.html --&gt;</span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>btn btn-danger  mb-2<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{% url <span class="token punctuation">&apos;</span>social:begin<span class="token punctuation">&apos;</span> <span class="token punctuation">&apos;</span>instagram<span class="token punctuation">&apos;</span> %}<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>Login with Instagram<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span></code></pre>
+<p>We can now start the server, visit <a href="http://localhost:8000/login">http://localhost:8000/login</a>, and try to login with Instagram:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546744101/kbonbxstegpst04gw0r6.png"></p>
+<blockquote>
+<p> Note: The Instagram application is in sandbox (test) mode. To make it live, you will have to submit it for a review. You can learn more about this <a href="https://www.instagram.com/developer/review/">here</a>.</p>
+</blockquote>
+<p>Once the application is authorized, the user will be logged in and redirected to the home page:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546744115/miggmugqege2j43eb8kp.png"></p>
+<h2 id="toc-linkedin-authentication" class="false">
+<a href="#toc-linkedin-authentication">Linkedin Authentication</a>
+</h2>
+<p>We will set up LinkedIn authentication in three steps:</p>
+<ul>
+<li><p>Get API credentials</p>
+</li>
+<li><p>Setup the Backend</p>
+</li>
+<li><p>Setup the Frontend</p>
+</li>
+</ul>
+<h3 id="toc-get-api-credentials">Get API credentials</h3>
+<p>Let&#x2019;s visit the Linkedin developers <a href="https://www.linkedin.com/developers">page</a> and click on <strong>Create app</strong>:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546744128/v0ok06ept95nof6t02ev.png">
+Fill out the application details:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546744142/vldp9jo52sknyha1mqvo.png"></p>
+<blockquote>
+<p>Note: Most of these fields are required and you will have to fill them out with valid structured data. </p>
+</blockquote>
+<p>Once the app has successfully been created, you will be redirected to the application&#x2019;s dashboard. Here, add <a href="http://localhost:8000/social-auth/complete/linkedin-oauth2/">http://localhost:8000/social-auth/complete/linkedin-oauth2/</a> as the redirect URL and update the application:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546744155/kx7llcr6espnb1yapyak.png"></p>
+<p>Take note of the Client ID and Secret, we will need it in setting up the backend.</p>
+<h3 id="toc-setup-the-backend">Setup the Backend</h3>
+<p>Let&#x2019;s add this code to the <code>settings.py</code>file:</p>
+<pre class="language-python" data-title="python"><code class="language-python">    <span class="token comment"># settings.py</span>
+
+    <span class="token comment">#[...]</span>
+
+    <span class="token comment"># add this code</span>
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY <span class="token operator">=</span> YOUR_CLIENT_ID         <span class="token comment">#Client ID</span>
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET <span class="token operator">=</span> YOUR_CLIENT_SECRET  <span class="token comment">#Client Secret</span>
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_SCOPE <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">&apos;r_basicprofile&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;r_emailaddress&apos;</span><span class="token punctuation">]</span>
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_FIELD_SELECTORS <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">&apos;email-address&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;formatted-name&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;public-profile-url&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;picture-url&apos;</span><span class="token punctuation">]</span>
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_EXTRA_DATA <span class="token operator">=</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">(</span><span class="token string">&apos;id&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;id&apos;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">(</span><span class="token string">&apos;formattedName&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;name&apos;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">(</span><span class="token string">&apos;emailAddress&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;email_address&apos;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">(</span><span class="token string">&apos;pictureUrl&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;picture_url&apos;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">(</span><span class="token string">&apos;publicProfileUrl&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;profile_url&apos;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span>
+
+    <span class="token comment">#[...]</span></code></pre>
+<blockquote>
+<p> Replace the YOUR_CLIENT_* keys with the values from your LinkedIn application.</p>
+</blockquote>
+<p>The <code>SOCIAL_AUTH_LINKEDIN_OAUTH2_SCOPE</code> array contains the permissions needed to access the user&#x2019;s data, similar to what we saw when we set up authentication via Facebook. </p>
+<p>The <code>SOCIAL_AUTH_LINKEDIN_OAUTH_FIELD_SELECTORS</code> array contains the list of data that should be returned when the user is successfully authenticated via Linkedin. It is similar to the <code>SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS</code> array for Facebook. You can find the full list of data items that can be requested for <a href="https://developer.linkedin.com/docs/fields/basic-profile">here.</a> </p>
+<p>The <code>SOCIAL_AUTH_LINKEDIN_OAUTH2_EXTRA_DATA</code> array contains the data that we want to store in the database for later reference.</p>
+<h3 id="toc-setting-up-frontend">Setting up Frontend</h3>
+<p>Let&#x2019;s replace the content of the <code>home.html</code> file with the code below:</p>
+<pre class="language-markup" data-title="markup"><code class="language-markup">    <span class="token comment">&lt;!-- home.html --&gt;</span>
+
+    {% extends &apos;base.html&apos; %}
+    {% block title %} Home {% endblock %}
+    {% block content %}
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>row<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-sm-12 mb-3<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h4</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>text-center<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>Welcome {{ user.username }}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h4</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+        <span class="token comment">&lt;!-- Add from here --&gt;</span>
+        {% for ass in backends.associated %}
+          {% if ass.provider == &apos;facebook&apos; %}
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-md-6 text-center<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{{ass.extra_data.picture.data.url}}<span class="token punctuation">&quot;</span></span> <span class="token attr-name">alt</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span><span class="token punctuation">&quot;</span></span> <span class="token attr-name">width</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>150<span class="token punctuation">&quot;</span></span> <span class="token attr-name">height</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>150<span class="token punctuation">&quot;</span></span> <span class="token attr-name">style</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>border-radius: 50%<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-md-6 social-container my-2<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>                 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span> Signed in via:  {{ ass.provider }} <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span> Name:  {{ ass.extra_data.name }} <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span> Provider url: <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{{ass.extra_data.profile_url}}<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>link<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+          {% endif %}
+          {% if ass.provider == &apos;instagram&apos; %}
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-md-6 text-center<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>               <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{{ ass.extra_data.user.profile_picture }}<span class="token punctuation">&quot;</span></span> <span class="token attr-name">alt</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span><span class="token punctuation">&quot;</span></span> <span class="token attr-name">width</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>150<span class="token punctuation">&quot;</span></span> <span class="token attr-name">height</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>150<span class="token punctuation">&quot;</span></span> <span class="token attr-name">style</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>border-radius: 50%<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>             <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-md-6 social-container my-2<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span>Signed in via: {{ ass.provider }} <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span> Name:  {{ ass.extra_data.user.full_name }} <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span>Provider url: <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>https://instagram.com/{{ ass.username }}<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>link<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+          {% endif %}
+          <span class="token comment">&lt;!-- Add from here --&gt;</span>
+          {% if ass.provider == &apos;linkedin-oauth2&apos; %}
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-md-6 text-center<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{{ass.extra_data.picture_url}}<span class="token punctuation">&quot;</span></span> <span class="token attr-name">alt</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span><span class="token punctuation">&quot;</span></span> <span class="token attr-name">width</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>150<span class="token punctuation">&quot;</span></span> <span class="token attr-name">height</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>150<span class="token punctuation">&quot;</span></span> <span class="token attr-name">style</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>border-radius: 50%<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-md-6 social-container my-2<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>                 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span> Signed in via:  Linkedin <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span> Name:  {{ ass.extra_data.name }} <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span> Provider url: <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{{ass.extra_data.profile_url}}<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>link<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+          {% endif %}
+          <span class="token comment">&lt;!-- End here --&gt;</span>
+        {% endfor %}
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>col-sm-12 mt-2 text-center<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>btn btn-danger<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{% url <span class="token punctuation">&apos;</span>logout<span class="token punctuation">&apos;</span> %}<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>Logout<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+        <span class="token comment">&lt;!-- End here --&gt;</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+    {% endblock %}</code></pre>
+<p>We will also update the <code>URL</code> of the <strong>Login with LinkedIn</strong> button in the <code>login.html</code> file:</p>
+<pre class="language-markup" data-title="markup"><code class="language-markup">    <span class="token comment">&lt;!-- templates/login.html --&gt;</span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>btn btn-info mb-2<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+           <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>{% url <span class="token punctuation">&apos;</span>social:begin<span class="token punctuation">&apos;</span> <span class="token punctuation">&apos;</span>linkedin-oauth2<span class="token punctuation">&apos;</span> %}<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>Login with LinkedIn<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span></code></pre>
+<p>We can now start the server, visit <a href="http://localhost:8000/login">http://localhost:8000/login</a>, and try to login with LinkedIn:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546744167/e1st6zwajjufu0mvu3za.png">
+Once we authorize the application by clicking on <strong>Allow</strong>, we will be directed to the homepage:</p>
+<p><img alt="" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1546744180/y8oxmmfxsvdlpdr8v3e5.png"></p>
+<h2 id="toc-conclusion" class="false">
+<a href="#toc-conclusion">Conclusion</a>
+</h2>
+<p>We have come to the end of this tutorial and have learnt how to set up social authentication in Django using the <code>social-auth-app-django</code> library with minimal configuration. We have also learnt how to request extra user data once the user has been authenticated via a social network provider. </p>
+<p>As we already discussed at the beginning of this article, the importance of social authentication in modern web applications cannot be overemphasized. </p>
+<p>The code for this article is available <a href="https://github.com/Jordanirabor/django_social_app">here</a> on GitHub.</p>
+</div>
+<p>
+Like this article?
+<a href="https://twitter.com/JordanIrabor" title="Follow @JordanIrabor on Twitter">
+Follow @JordanIrabor on Twitter
+</a>
+</p>
+<div id="comments" class="p-t-md" style="
+            background: #faf8f4;
+            padding: 0 25px;
+            border-radius: 10px;
+            border: solid 1px #f8f2e8;
+            box-shadow: 0 0px 3px 0 rgba(88,88,102,.07);
+        ">
+<script defer src="https://launcher.spot.im/spot/sp_D7GE1sbz" data-spotim-module="spotim-launcher" data-post-url="https://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin" data-post-id="39898">
+            </script>
+</div>
+</div>
+</div>
+<div class="column is-narrow is-right">
+<div class="article-inner">
+<div class="article-sidebar">
+<div class="sidebar-sticky">
+<div class="sidebar-item" style="height: 35%; top: 0">
+<div class="make-me-sticky">
+<div class="react-syndicate" data-take="1"></div>
+</div>
+</div>
+<div class="sidebar-item" style="height: 20%; top: 36%">
+<div class="make-me-sticky">
+<div class="is-hidden-with-subscription has-text-centered">
+<div id="bsa-zone_1537909991-1_123456"></div>
+</div>
+</div>
+</div>
+<div class="sidebar-item" style="height: 40%; top: 57%">
+<div class="make-me-sticky">
+<div class="react-syndicate" data-is-sidebar="true" data-take="1"></div>
+<div class="m-t-sm">
+<div class="is-hidden-with-subscription has-text-centered">
+<div id="bsa-zone_1537909991-3_123456"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<footer>
+<div class="article-end">
+<div class="section is-small" style="background: #fff">
+<div data-spotim-module="recirculation" data-spot-id="sp_D7GE1sbz"></div>
+</div>
+<section class="section is-author p-y-lg" style="background: #CBCED4">
+<div class="container">
+<div class="columns">
+<div class="column">
+<div class="article-author is-large is-horizontal">
+<a href="/@JordanIrabor" class="author-avatar image " title="Jordan Irabor's Avatar">
+<img class="lazy" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,h_auto,q_auto:good,f_auto,c_fill,g_face/media/40410/SbYeM6gR3qnxFLcGhgRX_ProfilePic.jpg" alt="Jordan Irabor">
+</a>
+<h3 class="title is-5">
+<a href="/@JordanIrabor" title="Jordan Irabor">Jordan Irabor</a>
+</h3>
+<div class="m-b-sm">
+<a href="https://twitter.com/intent/follow?screen_name=JordanIrabor" class="button is-info is-small ">
+Follow @JordanIrabor
+</a>
+</div>
+<div class="author-bio"><p>Jordan Irabor is a software engineer with a true passion for Web Development, Technical Writing and Graphic Design. He is currently based in Nigeria and has written a lot of technical articles on several websites and blogs including Scotch and Stackshare. His development stack primarily comprises JavaScript, Python, Golang and PHP. </p>
+<p>When he is not writing code, learning a new framework or drafting a technical article, Jordan is playing a lead guitar with his rock band and making new music for the ears that appreciate sonorous sounds. </p>
+<p>He also does public speaking at tech meetups, and his theoretical knowledge from acquiring a BSc in Computer Science sometimes helps him in applying best practices while programming.</p></div>
+<div class="links">
+<div class="author-links">
+<a href="https://twitter.com/JordanIrabor" target="_blank" rel="noopener noreferrer" title="Twitter @JordanIrabor">
+<span class="icon color-twitter">
+<i class="fab fa-twitter fa-2x"></i>
+</span>
+</a>
+<a href="https://facebook.com/jordan.irabor" target="_blank" rel="noopener noreferrer" title="Facebook">
+<span class="icon color-facebook">
+<i class="fab fa-facebook fa-2x"></i>
+</span>
+</a>
+<a href="https://github.com/Jordanirabor" target="_blank" rel="noopener noreferrer" title="GitHub">
+<span class="icon icon-github has-text-grey-dark">
+<i class="fab fa-github-alt fa-2x" data-fa-transform="down-0.75"></i>
+</span>
+</a>
+</div>
+</div>
+<div class="author-action m-t-sm m-b-0">
+<a href="/@JordanIrabor" title="View Jordan Irabor's Profile" class="button is-dark is-rounded is-fullwidth">
+View My 8 Posts
+</a>
+</div>
+</div>
+</div>
+<div class="column is-narrow is-hidden-touch" style="align-self: center; flex-basis: 500px">
+<div class="card is-scotch  ">
+<a class="card-image" href="/tutorials/building-a-universal-application-with-nuxtjs-and-django" title="Building a Universal Application with Nuxt.js and Django">
+<div class="image is-2by1 lazy" data-src="https://scotch-res.cloudinary.com/image/upload/w_auto,q_auto:good,f_auto/v1549703812/xrj9wbuzmsimmjlc5pjl.gif">
+</div>
+</a>
+<div class="card-content">
+<h2 class="title is-4">
+<a href="/tutorials/building-a-universal-application-with-nuxtjs-and-django">Building a Universal Application with Nuxt.js and Django</a>
+</h2>
+<p class="excerpt">In this article, we will learn what a Universal application is and go on to build a Universal application using Nuxt.js and Django....</p>
+<p class="read-more">
+<a title="Read Building a Universal Application with Nuxt.js and Django" href="/tutorials/building-a-universal-application-with-nuxtjs-and-django" style="
+                        margin-top: 25px;
+                        display: inline-block;
+                        color: #3273dc !important;
+                        border-color: #3273dc;
+                        border-bottom: 1px solid;
+                        padding-bottom: 3px;
+                    ">
+Read more
+<i class="fal fa-arrow-alt-right m-l-xs"></i>
+</a>
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</footer>
+</article>
+</main>
+
+<footer id="scotchy-footer" class="section is-small p-t-xs p-b-sm">
+<div class="footer__projects is-hidden-mobile is-hidden-tablet-only">
+<div class="container">
+<div class="columns center-flex-v">
+<div class="column is-8">
+<div class="footer__about">
+<div class="about__title">
+<div class="logo center-flex-v">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30" height="70">
+<image width="100%" height="100%" xlink:href="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAAd8AAAM5BAMAAAC0rCbdAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAGFBMVEUAAAD////NqEjt1H+lfjGkfjCkfS8AAAB5F91IAAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAALiMAAC4jAXilP3YAAAAHdElNRQfhAwIPGBhmTpfuAAAQs0lEQVR42u3cS24cSw4FUKVdC8jawYMGGj9ArbnQXUt4mjcagva/hLY+lqsq40MyyCCZde/MhpQZJy8jsiwbvrujZDm+ZyV9rUM+VnfUvOLNgY8ZwJrLAzhWAA54xRRgb1c1+i8RgGMFYIABBhhggAMFYIABplwwOlhxfQAHC8DhLghwsPUF/zm8/msT4GgBGGCAAQYY4EABGGCACdcLD9ZbIMDRAnCw6yUBe6sa0X6NABwtAAMMMMAAAxwoAAMMMMCby8UHq60Q4HABONTlsoBXb1UrAAMMMMAAe6MABhjgoaslAGstEeB4AVjhat6mZnTPVYDjBWCA2RfLAFZaI8ABYwBevU0AXwRggAHuXCsFWGeRAEcMwMPX8hZ1onmyAhwxAI9eKgdYZZUAhwzAo5davUW9AAwwwM0rJQFrLBPgmNEGe3u60TtqAI4ZgMculAWssE6Ag0YZvHp7+gEYYIAb10kDHl8owFGjC/bWEKJ12AAcNUrgLJ8s1VYKcNiogldvDSUAA0y/SiLw6FIBjhtNsLeFFJ3jBuC4UQHn+aCltFaAA0cRvHpbaAEYYOo1UoHHFgtw5OiBvSXEaBw4twbO9LlDZbUAhw7A0kus3hJqABZeIRl4ZLkAx44W2NtBzviRc2vgXK9hhfUCHDxK4NXbQQ/Aou9PB5YvGODo0QF7KxgZPXRuDZztNTy8YoDDRwW8eis4GQOneyuNLhng+AFY8N3eBlaGztl8b6XBNQOcIArg1dvAC8Ds700Jli0a4AwZB3sLmBk4eDK+lYZWDXCKDINXbwE3cnDKQ3pk2QDnyCjYe/3zwDkP6YF1A5wkAPO+cfVePz9ScNK3knzhAGfJGNh79YIID5+sh7R45QCnyRB49V69JDJw2kNaunSA80S09LxnlnDtACcKwJQkPrNkiwc4U+Rg75ULI/hYnPnMEq0e4FQRg1fvlUvDB6c+pCXLBzhX2MvPfWYJ1g9wsgDcS/Iziw8AOFuYgOxbmC0AOF0Abif9mcUlAJwvLEL+Lcw0AJwwALeygzOLhwA4YxiIPWxhlgLglAG4nl2cWRwGwDlDZuxjCzMcACcN2bGTLUyHAJw1AJezlzOLLAE4bYiS3WxhKgXgvCFR9rOFiRaAEwfgUnZ0ZtEwAGcOAbOnLUzSAJw6BM2utjCFA3DuAHydfZ1ZBA/AydP17GwL90EAZ08HtLct3BUBnD4AX2Z3Z1aPBHD+NEn728IdE8A7CMDn2eGZ1UYBvIc0UHvcwk0VwLsIwH+yyzOrxQJ4H6my9rmFGy6AdxKAf2enZ1YdBnDs/Lj/yl9jYG8HU0shL2VwojPrktslV2R5wPeFtMTJwT/u75niJnj19vRyX0tDXAbnOKTv7wXiMi0F+P5eIs4Lvm9HAvYmtfKj461WXDye4h/SXW9VXLTFB/e9taHOCaZ4KxU3wKs3a8xbq7gEDn5IE72Viku42GCqt1JxOjDhgG5WXAd7y4a95YoLB1ToQ5rjLVZc0EUGs7zFinOBWQPNBK/eOAVvcaa34LiHNNdbrHjLCwvme0sV5wGzB5oH9uapeEsznQYs8hYq3pzJQd9KsoKr4GPjN0JE6C3MdBKw1EsGr97Cy4gLLsx0BrDcW6j4GhzxNTzgrYHX6q8DZKTg7UwnAI94qWBvo5p3O9NLdPDQQPfB8V7Dg97NTF8Jw4FHC04HHvXSwKs3U8+73cShwcMD3QUHew0reDczfUmMBdYoOBVYw0sCe0O/olLwZhMvccE63jxgpYKb4EifO7S8ZfAxHljLe31qRQWrFUwAr97Y96h5K++laGC9gpOA9bybU+scHOaDlmLBFfAaC6zpzQBWLbgPZq7u8SxKYFVv+b0kBT9u8ne0ghXBPx/LGTXrehtg3getGneYrFxw46MWC/zYzgBZ2asD/vnYTZSCVcAEr5is7b1+L23Aq5ZXNtfqBTc+W1LBRK5MrO8dBtO9grE2KHgUTJ1nmdjAWweTPkozvcyxtii4/mGaAmZ7eWIL7/V7iQfmezlik4J7YHUvQ2zirX+Y7oMFA80R2xQ8AhZ6qWIb7wBYWjBRbFSwHDzgJYmNvHLwiJcgtiq4Cu79YWmoYILYylv982EPPOjtic0Krv75sAMeLfix87naztsGr2YFt8WGBdf+9NAGKxTcFBt6ZWAVb30bWxbsCa6KLb0isM5EV4fatGARWMtbEZt6JWC1gstDbVtwDXycAy6Jbb21n/G0wIrewlAbFywAaxZcEBt7/cFXQ21dcBtsP9EbsbW39s8t62Dlgq+G2rzgCODzis29fLC691xs7w0B/h7qHwHB+hN9VvEEbwzw47yCg4AfpxXMBtt4P4Z6SsFRwI+zCuaCjSb6veI5BYcBP/49xxsH/K+YYDvvy79vC/xyOt0U+Omf02lOxTzwT8OCJ1UcA/xe8KSKY4A/Cp4jDgH+LHjOUEcAP30VPKViHth0oOdUHAD8PdBTKg4APivYvuK//MHnBdtXHAB8UbB5xf7gl38uwcYVu4OfrrzWFfPAP80H2rxib/C2YOOKncFP24KNK3YGl7y2FfuCSwNtXPE16XgBXo3B5YJNK3YFv/xTARtW7Al+qnktK/YEv1S9hhWXwbV/iacKbhRsWDEPrPnR8qlRsF3Ff/mBm16ziv3AzYG2q7gDPpqBnzoFW1V8DV5mgbvenYGrHzmsZ5oL/jlroK0qviuC17s72z89ULw2FfuACQNtVPFDD7xagHtvJMOK38pvpTr47j8KXtJA21T8Xzb4pDDQVK9+xQ8eYOIGtgE/18GVz5an0ZmmbmCTmX6rgC/eyLpg+ga2qPi1fEi3wIfBmWZ51SsWgYcqZmxgg4ofROCRilkbWL/ih1MDXPvrtBEwbwPrg7dn1vnRXHsvyWda4NWd6dfGW6kBFlcs8KpW/CAFCyvmHlif+Z8i+NQEVz55HKQVy7ynVz3w2+bMKvyX6aVjWlQx/4BW38WvzUO6BRZULDmwlMEPMvD7JuZXLPfqHVuFLXxprJ9a7IpHvGoVv7XPrDaYV/GQV63iVyH4wK540KtUcWELc8CMike9ShU/nHrg1jHNqHjcqwN+O7UP6fYxTRcreHVm+rV3SPfAtKHW8KpU/NAHN49povhFxatR8a8t3DmkO6cWaaiFn58tKn7rnll9cE/8pOYdr/jXRFPB1U3cEyuNs07FpYlersFLF3yaUq9GxW+n/plFAVdPLtV6FSp+ZYAbm7hW8otuveMVN7bwcfM7HfC2ZAPuKPjXRPfPrPr/E7dZzcXeteCeBmf6lXJmUY7p87x8xkQ7WPEDEUw5tf7EpliVit8nun9mUU+tWRmo+FfBlDOLemrNytBEU84sxqkVu+LiRDfA1E0cteKPgilnVv3UOqQSP7x/610FTHgKjmDZUL8VweXpjbWJZRWXJ7pCC7aJRRV/FEzbwnXwIVHF7wVXt/BK+20/ML/ihzK4UuUSbRPzKy5PdHV2w4G5FX8WTD2zAm5irvijYPIWjgjmDfVnwQxwvE3Mq/izYPoWjgjmVPxVMAMccaYZ4s+CGRMdE0we6q+CWeCIM00WfxXMmeg62LNi4lBXC26BQ840seKvglkT/Q2ONdMk8dtXwc90U9hNTBH/HmjeFv4GB5tpwjb+PdAnOqnzOHzBPfHvgS4U3NzCUTdxT/w90NwtHPXF1BE/fA8086UUeBM3xX+87C0cdxM3xN8bWLCFGyN/8PbWxGfeE8OTYKaL7+OHc69gokPP9Glb8tl5dRJNdOyZPl2V/PB24ZVMdPCZ/kiNK5voxtd4Q8/z9p7r33wWgaPPdCOiiW7tc29QJ89V8B0FHHymSWDSROedaeFEt77Mm9TMsxhcH4SDN6oVDmQXMy0uOOlMyyc66UwPTHTKikcK/v7STBXXC6aAE8700EQnnOmxiU4402MT3fxqb1ox9YJpE92ah4M3rhSWgDnTESsuFMyb6ObXH7x52/Aay1+xQsFN8MEbeB3ehO5gpjUmOtNMq0x0pop1Cv4Gh6/4mbd20UwfvJHn4U2nbKYjVVwoWDTRaSpWKzhJxYoFt7e+N7ThlR1Z50+qVPHBm/oZ7rLlMx2j4lLB4onufOvBG/sedk3JK9YuuL39D97cdsEicHv/e3PbBa93ksSuWL/gzvNyFvMXPFqx71A/WxQcuWKTggNXbFTwn0uUn1ks73fBA+DONQ5eYEk7mSu2K7h7lUBelYK7lzl4gEXVJK7YtOD+hYJ41QruXukwGyzrRbHiyWJZLZoVzx3qZ/OCCRfz96oW3L/aYR5Y2olyxdPE0kq0K5411M9zCqZc0NWrXjDlip5e9YJJl/TzGhRMuebBGjzShknFxuKRMmwqthUPdTFUsY94bGFjFTcepJl4cF1mFVuJR5clC+lRmoiHVyUL7VkaiMcXJQzxYSpznzXWJMviISZ6LQqmX36al1qBufig5W3fxtzLuMOEes0H+vIWE8Q9r33B5/foPtThsVZcy0COjLuY1suZtpEsnNsMlKz76EdyZD1YIVl9HfPEEjJlFaxJG8vCnSUm2WYRIzmyb8Yg89ewmoMXvph4Yj/bPfOhHGX309JeLmCdAJbfsDrbrNsvs72XQ82/pbTY0t2neK+Gmi8eyuDTVrjpXPHlrafd9ugldnvUXmK30Vp8xJd3nei9vvUksdtOuttUPOXuR8eCN3ef/CF+/utwU7G1eJn+gK9znCreeNfp4G3Fc3566FVwqeIJPxD3K7hYsfnf8XgWXFyH7V9b+hZcqdjwnx54F1wBK69msb8FPRWwZsnmN2ClVrFaA1NmSAWs04H181Rckcai6o9T5Wmqg0fJjQv7gZe2eGBhhk/SECwmd67rB77rgUWr6z1G4VOcBeaS+9cLD5b8j5rJwcRVqj8+/fS2G322GVdy9DLBtXqYV8kFVgjAAAOcGrzeGvjmGgYYYIABBhjgSjy8SX4AAHBK8OICjvxzaYABzgX28Yb928P9gRcncMR/AbBPsJfXbaYB3jl4cQMH+5d4uwX7eZ1m+tbAiyPYZaZvDuzpdZnpWwMvrmCHmb45sK/XYaYB3jl4cQZP38Q3B/b2Tp9pb6/r/x/iE4BN4609zp5pb+1s8OKtfQ/AhvG2fmQF2CyLt/UzAJvFW/qVFWCjLN7S3wEYYJ14O7+zAmySxdv5JwCbxFt5lhVggyzeyvMAbBBv40VWgNWzeBsvA7B6vIVXWQFWzuItvA7AyvH2bbICrJrF27cNwKrx1hWyAgywPIu3rhSAFeNtK2YFWC2Lt60cgNXiLatkBVgpi7esFoCV4u2qZgVYJYu3qx6A9z3RVjPtrZoNXrxVrQC874m2mWlv02zw4m1qB+B9T7TFTHuLZoMXb1EvAAPMi7enmxXgfU+09kzfHNhbQ4juTHtrADYGL94aSgAGmB5vCykrwABTs3hbaAEYYIAr8ZYQswIMMMAAv2fxllADMMAAAwxw5AAMMMAAAxw5AEvjDSFmBRhggFOD1bxZjmmAdz7TK8AAk7N4YyhR9KaoWLPgGwQv3px+VL23B44/07oTnaBiZW/4irULDl+xujd4xfoFB6/YwBu6YouCQ1ds4g0sNvKGHWqbgY4rNvTGHGpDb0ixqTeg2NgbTmzuvQt1cq0zvIFKnsMNU/KkesOUPJMbgDyb60z24PqRVy+uj9lV+5mbKfcsU3r2Rl7nNqqdgY6K/Z1lz2Ncz+571XMnlbLls5z/BwPxdwyhWA63AAAAAElFTkSuQmCC"></image>
+</svg> </div>
+<h4>Scotch</h4>
+</div>
+<p class="p-r-lg m-b-xs">Top shelf learning. Dev tutorials explaining the code <strong style="color: #DDD">and the choices behind it all.</strong></p>
+<p>Made with 💖 by <a href="https://twitter.com/chrisoncode" class="has-text-light">Chris</a> and <a href="https://twitter.com/whatnicktweets" class="has-text-light">Nick</a>.</p>
+<ul class="footer-social-links list-unstyled">
+<li><a href="https://twitter.com/scotch_io" class="icon-twitter" title="Follow Scotch on Twitter">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 410.155 410.155" style="enable-background:new 0 0 410.155 410.155;" xml:space="preserve" width="50" height="50">
+<path style="fill:#23A0F2;" d="M403.632,74.18c-9.113,4.041-18.573,7.229-28.28,9.537c10.696-10.164,18.738-22.877,23.275-37.067
+	l0,0c1.295-4.051-3.105-7.554-6.763-5.385l0,0c-13.504,8.01-28.05,14.019-43.235,17.862c-0.881,0.223-1.79,0.336-2.702,0.336
+	c-2.766,0-5.455-1.027-7.57-2.891c-16.156-14.239-36.935-22.081-58.508-22.081c-9.335,0-18.76,1.455-28.014,4.325
+	c-28.672,8.893-50.795,32.544-57.736,61.724c-2.604,10.945-3.309,21.9-2.097,32.56c0.139,1.225-0.44,2.08-0.797,2.481
+	c-0.627,0.703-1.516,1.106-2.439,1.106c-0.103,0-0.209-0.005-0.314-0.015c-62.762-5.831-119.358-36.068-159.363-85.14l0,0
+	c-2.04-2.503-5.952-2.196-7.578,0.593l0,0C13.677,65.565,9.537,80.937,9.537,96.579c0,23.972,9.631,46.563,26.36,63.032
+	c-7.035-1.668-13.844-4.295-20.169-7.808l0,0c-3.06-1.7-6.825,0.485-6.868,3.985l0,0c-0.438,35.612,20.412,67.3,51.646,81.569
+	c-0.629,0.015-1.258,0.022-1.888,0.022c-4.951,0-9.964-0.478-14.898-1.421l0,0c-3.446-0.658-6.341,2.611-5.271,5.952l0,0
+	c10.138,31.651,37.39,54.981,70.002,60.278c-27.066,18.169-58.585,27.753-91.39,27.753l-10.227-0.006
+	c-3.151,0-5.816,2.054-6.619,5.106c-0.791,3.006,0.666,6.177,3.353,7.74c36.966,21.513,79.131,32.883,121.955,32.883
+	c37.485,0,72.549-7.439,104.219-22.109c29.033-13.449,54.689-32.674,76.255-57.141c20.09-22.792,35.8-49.103,46.692-78.201
+	c10.383-27.737,15.871-57.333,15.871-85.589v-1.346c-0.001-4.537,2.051-8.806,5.631-11.712c13.585-11.03,25.415-24.014,35.16-38.591
+	l0,0C411.924,77.126,407.866,72.302,403.632,74.18L403.632,74.18z" />
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+</svg>
+</a></li>
+<li><a href="https://facebook.com/scotchdevelopment" class="icon-facebook" title="Follow Scotch on Facebook">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="50" height="50" viewBox="0 0 96.124 96.123" style="enable-background:new 0 0 96.124 96.123;" xml:space="preserve">
+<g>
+<path d="M72.089,0.02L59.624,0C45.62,0,36.57,9.285,36.57,23.656v10.907H24.037c-1.083,0-1.96,0.878-1.96,1.961v15.803   c0,1.083,0.878,1.96,1.96,1.96h12.533v39.876c0,1.083,0.877,1.96,1.96,1.96h16.352c1.083,0,1.96-0.878,1.96-1.96V54.287h14.654   c1.083,0,1.96-0.877,1.96-1.96l0.006-15.803c0-0.52-0.207-1.018-0.574-1.386c-0.367-0.368-0.867-0.575-1.387-0.575H56.842v-9.246   c0-4.444,1.059-6.7,6.848-6.7l8.397-0.003c1.082,0,1.959-0.878,1.959-1.96V1.98C74.046,0.899,73.17,0.022,72.089,0.02z" fill="#FFFFFF" />
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+</svg>
+</a></li>
+<li><a href="https://github.com/scotch-io" class="icon-github" title="Follow Scotch on GitHub">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="50" height="50" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<g>
+<path d="M256,0C114.615,0,0,114.615,0,256s114.615,256,256,256s256-114.615,256-256S397.385,0,256,0z M408.027,408.027   c-19.76,19.759-42.756,35.267-68.354,46.094c-6.502,2.75-13.105,5.164-19.801,7.246V423c0-20.167-6.916-35-20.75-44.5   c8.668-0.833,16.625-2,23.875-3.5s14.918-3.667,23-6.5c8.084-2.833,15.334-6.208,21.75-10.125c6.418-3.917,12.584-9,18.5-15.25   c5.918-6.25,10.875-13.333,14.875-21.25s7.168-17.417,9.5-28.5c2.334-11.083,3.5-23.292,3.5-36.625c0-25.833-8.416-47.833-25.25-66   c7.668-20,6.834-41.75-2.5-65.25l-6.25-0.75c-4.332-0.5-12.125,1.333-23.375,5.5s-23.875,11-37.875,20.5   c-19.832-5.5-40.416-8.25-61.749-8.25c-21.5,0-42,2.75-61.5,8.25c-8.833-6-17.208-10.958-25.125-14.875s-14.25-6.583-19-8   s-9.167-2.292-13.25-2.625s-6.708-0.417-7.875-0.25s-2,0.333-2.5,0.5c-9.333,23.667-10.167,45.417-2.5,65.25   c-16.833,18.167-25.25,40.167-25.25,66c0,13.333,1.167,25.542,3.5,36.625s5.5,20.583,9.5,28.5s8.958,15,14.875,21.25   s12.083,11.333,18.5,15.25s13.667,7.292,21.75,10.125s15.75,5,23,6.5s15.208,2.667,23.875,3.5c-13.667,9.333-20.5,24.167-20.5,44.5   v39.115c-7.549-2.247-14.99-4.902-22.3-7.994c-25.597-10.827-48.594-26.335-68.353-46.094   c-19.758-19.758-35.267-42.756-46.093-68.354C46.679,313.195,41,285.043,41,256s5.679-57.195,16.879-83.675   c10.827-25.597,26.335-48.594,46.093-68.353c19.758-19.759,42.756-35.267,68.353-46.093C198.805,46.679,226.957,41,256,41   s57.195,5.679,83.676,16.879c25.598,10.827,48.594,26.335,68.354,46.093c19.758,19.758,35.266,42.756,46.092,68.353   C465.32,198.805,471,226.957,471,256s-5.68,57.195-16.879,83.675C443.295,365.271,427.785,388.27,408.027,408.027z" fill="#FFFFFF" />
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+</svg>
+</a></li>
+</ul>
+</div>
+</div>
+<div class="column is-4">
+<div class="is-hidden-with-account" style="
+                        border-radius: 5px;
+                        background: #FFE401;
+                        padding: 25px 10px 5px 10px;
+                    ">
+<style>
+.ml-subscribe-form-1112100 {
+    color: #574f08;
+    text-align: center;
+    margin: 0 auto 20px;
+    max-width: 90%;
+}
+
+.ml-subscribe-form-1112100 h4 {
+    font-size: 22px;
+    color: #574f08;
+    margin-bottom: 20px;
+}
+
+@media  screen and (max-width: 768px) {
+    .ml-subscribe-form-1112100 h4 {
+        font-size: 16px;
+    }
+}
+</style>
+<div id="mlb2-1112100" class="ml-form-embedContainer ml-subscribe-form ml-subscribe-form-1112100">
+<div class="ml-form-align-center ">
+<div class="ml-form-embedWrapper embedForm">
+<div class="ml-form-embedBody ml-form-embedBodyHorizontal row-form">
+<h4>We can't send Scotch drinks...<br>but we can send cool dev articles</h4>
+<form class="ml-block-form" action="https://app.mailerlite.com/webforms/submit/w3o9h2" data-code="w3o9h2" method="post" target="_blank">
+<style type="text/css">
+              .ml_message_wrapper {
+                position: absolute !important;
+                left: -9999px !important;
+              }
+            </style>
+<div aria-label="Please leave the following field empty" class="ml_message_wrapper">
+<input type="text" name="ml_message" tabindex="-1" value="" placeholder="Message" autocomplete="off" title="message">
+<input type="text" name="ml_email" tabindex="-1" value="" placeholder="Email" autocomplete="off" title="email">
+<input type="text" name="ml_name" tabindex="-1" value="" placeholder="Name" autocomplete="off" title="name">
+</div>
+<div class="field has-addons">
+<div class="control is-expanded has-icons-left ml-field-group ml-field-email ml-validate-email ml-validate-required">
+<input type="email" class="form-control input is-medium" data-inputmask="" name="fields[email]" value="" placeholder="Email" aria-label="Your Email">
+<div class="icon is-small is-left">
+📧
+</div>
+</div>
+<div class="control">
+<button type="submit" class="primary button is-info is-medium">Subscribe</button>
+<button disabled style="display: none;" type="button" class="button is-info is-medium is-loading loading">
+🌟 Magic ✨
+</button>
+</div>
+</div>
+<style type="text/css">
+              .ml-form-recaptcha {
+                margin-bottom: 20px;
+              }
+
+              .ml-form-recaptcha.ml-error iframe {
+                border: solid 1px #ff0000;
+              }
+            </style>
+<input type="hidden" name="ml-submit" value="1">
+</form>
+</div>
+<div class="ml-form-successBody row-success" style="display: none">
+<div class="ml-form-successContent">
+<h4>Thank you!</h4>
+<p>You have successfully joined the Scotchy super duper web dev awesome mailing list.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+    function ml_webform_success_1112100() {
+        document.querySelector('.ml-subscribe-form-1112100 .row-success').style.display = 'block';
+        document.querySelector('.ml-subscribe-form-1112100 .row-form').style.display = 'none';
+        // var $ = ml_jQuery || jQuery;
+        // $('.ml-subscribe-form-1112100 .row-success').show();
+        // $('.ml-subscribe-form-1112100 .row-form').hide();
+      }
+  </script>
+<img class="lazy" data-src="https://track.mailerlite.com/webforms/o/1112100/w3o9h2?vaa4d608450783acdc64d5338ff94f6d5" width="1" height="1" style="max-width: 1px; max-height: 1px; visibility: hidden; padding: 0; margin: 0; display: block;" border="0">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer__bottom footer--dark p-b-sm">
+<div class="container">
+<div class="footer__copyright columns">
+<div class="column has-text-left is-hidden-touch partners">
+<nav>
+<ul class="list-unstyled powered-by is-hidden-mobile" style="justify-content: flex-start">
+<li><a href="https://cloudinary.com/?utm_source=scotch&utm_campaign=coolstuff">
+Images hosted and processed by<br>
+<img class="lazy" data-src="/img/logos/cloudinary.png" alt="Cloudinary">
+</a></li>
+<li><a href="https://algolia.com?utm_source=scotch&utm_campaign=coolstuff">
+Real-time search by<br>
+<img class="lazy" data-src="/img/logos/algolia.png" alt="Algolia" style="padding-top: 5px">
+</a></li>
+<li><a href="https://m.do.co/c/7a59e9361ab7">
+Hosted by<br>
+<img class="lazy" data-src="/img/logos/digital-ocean.png" alt="Digital Ocean" style="padding-top: 4px">
+</a></li>
+</ul>
+</nav>
+</div>
+<div class="column has-text-right">
+<nav style="height: 100%">
+<ul class="list-unstyled" style="align-items: center; justify-content: flex-end; height: 100%">
+<li><a href="https://discover.buysellads.com/tech/scotchio">Advertise</a></li>
+<li><a href="/privacy">Privacy</a></li>
+ <li><a href="/terms">Terms</a></li>
+<li><a href="/rules">Rules</a></li>
+<li><a href="/contact">Contact</a></li>
+<li>1853-2019 © Scotch.io, LLC</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+</footer>
+<script src="//cdn-s2s.buysellads.net/pub/scotch-S2S-v20181004.js" data-cfasync="false" defer></script>
+<script>
+    if (window.bsa_targeting !== undefined) {
+        window.bsa_targeting.push(['scotchio_section', ['single-post']]);
+        window.bsa_targeting.push(['scotchio_postid', ['39898']]);
+    }
+</script>
+<script>
+    if (window.bsa_targeting !== undefined) {
+                    window.bsa_targeting.push(['scotchio_tags', ["django","python","social-media"]]);
+            }
+</script>
+<script src="https://cdn.polyfill.io/v2/polyfill.min.js" defer></script>
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-36045075-1', 'auto');
+ga('set', 'transport', 'beacon');
+ga('send', 'pageview');
+</script>
+<script src="/js/manifest.js?id=81c21676d65e0d42f79c" defer></script>
+<script src="/js/vendor.js?id=453b0a15890f7bbae914" defer></script>
+<script>
+    // used to lazyload spot im in lazyload-comments.js
+    window.scotchy = window.scotchy || {};
+    window.scotchy.articleId =  "39898";
+    window.scotchy.articleUrl = "https://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin";
+    </script>
+<script src="/js/app.js?id=fe675e6cbbe061e7b1e5" defer></script>
+<script>
+    const twitchBanner = document.getElementById('twitch-banner');
+
+    fetch('/api/twitch/check')
+        .then(resp => resp.json())
+        .then(data => {
+            if (data.is_streaming)
+                twitchBanner.style.display = 'block';
+        });
+</script>
+<script>
+                    // published at
+            if (window.ga !== undefined)
+                window.ga('set', 'dimension4', 'February 7, 2019');
+        
+                    // main tag
+            if (window.ga !== undefined)
+                window.ga('set', 'dimension5', 'django');
+        
+        // author
+        if (window.ga !== undefined) {
+            window.ga('set', 'contentGroup1', "Jordan Irabor")
+            window.ga('set', 'dimension1', "Jordan Irabor")
+        }
+    </script>
+<script>
+const authorFollowTwitter = document.getElementById('author-follow-twitter');
+authorFollowTwitter.addEventListener('click', function(e) {
+    e.preventDefault();
+    const url = this.href;
+    const twitterUsername = authorFollowTwitter.dataset.twitterUsername;
+
+    if (window.ga) {
+        window.ga(
+            'send',
+            'event',
+            'Follows',
+            'Twitter',
+            twitterUsername,
+            { 'transport': 'beacon', 'hitCallback': function() { document.location = url; }}
+        );
+    } else {
+        document.location = url;
+    }
+});
+</script>
+<script>
+    var firebaseConfig = {
+        appId: '1:700036131138:web:2018fc439fe65a1f',
+        projectId: 'scotchio-rum',
+        apiKey: 'AIzaSyAX37dRhl7MXjhqjVFqxwNSNykUbrVg_i8'
+    };
+    (function(sa,fbc){function load(f,c){var a=document.createElement('script'); a.async=1;a.src=f;a.onload=c;var s=document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(a,s);}load(sa);window.onload = function() {firebase.initializeApp(fbc).performance();}; })('https://fireperffw.firebaseapp.com/v002/firebase-performance-standalone.js', firebaseConfig);
+</script>
+<script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "@id": "https://scotch.io#organization",
+    "name": "Scotch.io",
+    "url": "https://scotch.io",
+    "sameAs": [
+        "http://www.facebook.com/scotchdevelopment",
+        "http://twitter.com/scotch_io",
+        "http://instagram.com/scotch_io",
+        "http://www.linkedin.com/in/scotch_io",
+        "http://plus.google.com/scotch_io"
+    ],
+    "legalName": "Scotch.io, LLC",
+    "logo": {
+        "@type": "ImageObject",
+        "url": "https://scotch.io/img/school-logo-sticker.png",
+        "width": 37,
+        "height": 60
+    },
+    "founder": {
+        "@type": "Person",
+        "name": "Chris Sevilleja",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://scotch-res.cloudinary.com/image/upload/w_300,q_auto:good,f_auto,c_fill,g_face/media/1/w7Vhk81SyClJPlDQPMLh_17795826_10154678250924582_8102840950354615336_n.jpg",
+            "width": 300,
+            "height": 300
+        }
+    }
+}
+</script>
+<script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "WebSite",
+    "@id": "https://scotch.io#website",
+    "url": "https://scotch.io",
+    "name": "Scotch",
+    "alternateName": "Scotch.io",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://scotch.io/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+    },
+    "author": {
+        "@id": "https://scotch.io#organization"
+    }
+}
+</script>
+<script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "https://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin",
+    "url": "https://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin",
+
+        "headline": "Django Authentication With Facebook, Instagram and LinkedIn",
+    
+    "description": "In this tutorial, we will build a simple Django application that allows users to sign in via their Facebook, Instagram and LinkedIn accounts. To achieve this, we will use the social-auth-app-django library.",
+
+    
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://scotch.io/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+    },
+
+    "publisher": {
+        "@id": "https://scotch.io#organization"
+    },
+
+    
+        "dateCreated": "2019-01-05 20:09:22",
+    
+        "datePublished": "2019-02-07 16:25:59",
+    
+    
+        "dateModified": "2019-04-03 13:30:50",
+    
+        "commentCount": 4,
+    
+    "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "item": {
+                    "@id": "https://scotch.io",
+                    "name": "Home"
+                }
+            },
+
+                            {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "item": {
+                        "@id": "https://scotch.io/tutorials",
+                        "name": "Tutorials"
+                    }
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "item": {
+                        "@id": "https://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin",
+                        "name": "Django Authentication With Facebook, Instagram and LinkedIn"
+                    }
+                }
+                    ]
+    },
+    
+    "sourceOrganization": {
+        "@id": "https://scotch.io#organization"
+    }
+}
+</script>
+<script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "TechArticle",
+    "@id": "https://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin#article",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin"
+    },
+    "url": "https://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin",
+    "headline": "Django Authentication With Facebook, Instagram and LinkedIn",
+    "wordCount": 3757,
+    "description": "In this tutorial, we will build a simple Django application that allows users to sign in via their Facebook, Instagram and LinkedIn accounts. To achieve this, we will use the social-auth-app-django library.",
+    "audience": "web developers and designers",
+    "discussionUrl": "https://scotch.io/tutorials/django-authentication-with-facebook-instagram-and-linkedin#comments",
+
+        "proficiencyLevel": "Beginner",
+    
+        "image": {
+        "@type": "ImageObject",
+        "url": "https://scotch-res.cloudinary.com/image/upload/w_1500,q_auto:good,f_auto/v1546743603/nib0upqbxynqdgycan7p.png",
+        "height": 750,
+        "width": 1500
+    },
+    
+        "keywords": "django, python, social media",
+    
+        "dateCreated": "2019-01-05 20:09:22",
+    
+        "datePublished": "2019-02-07 16:25:59",
+    
+    
+        "dateModified": "2019-04-03 13:30:50",
+    
+        "articleSection": "Tutorials",
+    
+        "commentCount": 4,
+    
+        "author": {
+        "@type": "Person",
+        "name": "Jordan Irabor",
+
+                "image": {
+            "@type": "ImageObject",
+            "url": "https://scotch-res.cloudinary.com/image/upload/w_300,h_300,q_auto:good,f_auto,c_fill,g_face/media/40410/SbYeM6gR3qnxFLcGhgRX_ProfilePic.jpg",
+            "height": 300,
+            "width": 300
+        },
+        
+        "url": "https://scotch.io/@JordanIrabor"
+    },
+    
+    "publisher": {
+        "@id": "https://scotch.io#organization"
+    }
+}
+</script>
+</body>
+</html>

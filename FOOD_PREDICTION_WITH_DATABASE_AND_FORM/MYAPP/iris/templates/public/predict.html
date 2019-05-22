@@ -1,0 +1,27 @@
+{% extends 'public/base.html'%}
+
+{% block content%}
+<div class="jumbotron">
+
+<a href="{% url 'inputiris'%}" class="btn btn-danger">IRIS</a>
+<a href="{% url 'inputfood'%}" class="btn btn-danger">FOOD</a>
+
+
+</div>
+<style type="text/css">
+	 .btn {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 40px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  margin: 10px 10px;
+}
+
+.button4 {border-radius: 40px;}
+</style>
+
+  {%  endblock%}

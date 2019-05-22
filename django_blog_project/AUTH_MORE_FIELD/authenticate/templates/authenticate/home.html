@@ -1,0 +1,14 @@
+{% extends 'authenticate/base.html' %}
+
+{% block content%}
+
+	<h1 class="text-center" style="font-weight: bold"> Home Page</h1>
+</br></br></br>
+	<!-- put some logic  so it wont show in main screen 
+	unless you log out -->
+{% if user.is_authenticated %}
+
+	<!--{% include "include/table.html" %} -->
+
+{%endif%}
+{% endblock %}
